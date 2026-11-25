@@ -17,3 +17,8 @@ Preserves boolean OR/AND/NOT semantics, converts `[ti]`/`[Title]` tags to
 `intitle:`, strips `[tiab]`/`[MeSH]` tags and `*` wildcards, converts `AND` to
 implicit spaces, and formats `NOT (...)` exclusions as `-term`.
 }
+\examples{
+pubmed_to_google_scholar_approx(
+  '(("H5N1"[tiab] OR "H5"[tiab]) AND "fatal*"[tiab]) NOT "H7N9"[tiab]'
+)
+}

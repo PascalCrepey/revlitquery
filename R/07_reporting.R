@@ -7,7 +7,7 @@
 #' @param output_dir Output directory path.
 #' @return Invisibly returns list of generated file paths.
 write_optimization_report <- function(result, output_dir = "output") {
-  fs::dir_create(output_dir, recurse = TRUE)
+  dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
   pareto_df <- result$pareto_df
   eval_df <- result$eval_df

@@ -17,3 +17,6 @@ A `shiny.appobj` object that can be passed to [shiny::runApp()].
 \description{
 Create the revlitquery Shiny application object
 }
+\examples{
+app <- revlitquery_app()
+}

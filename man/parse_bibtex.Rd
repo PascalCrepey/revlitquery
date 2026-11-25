@@ -16,3 +16,16 @@ A tibble with columns `seed_id`, `citekey`, `entry_type`, `title`,
 \description{
 Parse a BibTeX file into a normalized tibble of seed papers
 }
+\examples{
+tmp_bib <- tempfile(fileext = ".bib")
+writeLines(c(
+  "@article{li2008,",
+  "  title = {Case fatality rate of human H5N1 influenza},",
+  "  author = {Li, F. C.},",
+  "  year = {2008},",
+  "  pmid = {18439345}",
+  "}"
+), tmp_bib)
+parse_bibtex(tmp_bib)
+unlink(tmp_bib)
+}

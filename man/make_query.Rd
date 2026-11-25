@@ -17,3 +17,14 @@ Canonical query list of class `"search_query"`.
 \description{
 Construct a canonical query object
 }
+\examples{
+q <- make_query(
+  blocks = list(
+    list(name = "topic", field = "tiab", terms = c("h5n1", "h5")),
+    list(name = "outcome", field = "tiab", terms = "fatal*")
+  ),
+  exclude_terms = c("h7n9", "vaccin*")
+)
+to_pubmed_query(q)
+to_google_scholar_query(q)
+}

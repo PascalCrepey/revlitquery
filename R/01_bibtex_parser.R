@@ -6,6 +6,8 @@
 #'
 #' @param x Character scalar or vector.
 #' @return Cleaned character vector.
+#' @examples
+#' clean_latex_text("Human {H5N1} avian \\emph{influenza} infections")
 clean_latex_text <- function(x) {
   if (is.null(x) || length(x) == 0L) return(character(0))
   out <- as.character(x)
@@ -57,6 +59,8 @@ clean_latex_text <- function(x) {
 #'
 #' @param x Character scalar or vector.
 #' @return Normalized DOI string (empty string if missing).
+#' @examples
+#' normalize_doi("https://doi.org/10.1056/NEJMra052211")
 normalize_doi <- function(x) {
   if (is.null(x) || length(x) == 0L) return(character(0))
   out <- as.character(x)
@@ -234,6 +238,18 @@ split_keywords <- function(kw_str) {
 #' @param path Path to a `.bib` file.
 #' @return A tibble with columns `seed_id`, `citekey`, `entry_type`, `title`,
 #'   `abstract`, `doi`, `pmid`, `keywords`, `year`, `author`, `journal`.
+#' @examples
+#' tmp_bib <- tempfile(fileext = ".bib")
+#' writeLines(c(
+#'   "@article{li2008,",
+#'   "  title = {Case fatality rate of human H5N1 influenza},",
+#'   "  author = {Li, F. C.},",
+#'   "  year = {2008},",
+#'   "  pmid = {18439345}",
+#'   "}"
+#' ), tmp_bib)
+#' parse_bibtex(tmp_bib)
+#' unlink(tmp_bib)
 parse_bibtex <- function(path) {
   if (!file.exists(path)) {
     stop("BibTeX file not found: ", path, call. = FALSE)

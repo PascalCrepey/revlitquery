@@ -15,3 +15,6 @@ Normalized DOI string (empty string if missing).
 \description{
 Normalize a DOI string to lowercase bare identifier
 }
+\examples{
+normalize_doi("https://doi.org/10.1056/NEJMra052211")
+}

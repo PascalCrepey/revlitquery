@@ -26,3 +26,8 @@ Invisibly returns the result of [shiny::runApp()].
 \description{
 Launch the interactive revlitquery Shiny application
 }
+\examples{
+if (interactive()) {
+  run_revlitquery_app()
+}
+}

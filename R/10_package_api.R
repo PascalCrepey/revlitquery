@@ -93,6 +93,18 @@
 #' @param email Optional email for NCBI polite pool.
 #' @param ncbi_key Optional NCBI API key.
 #' @return Optimization result list (invisibly).
+#' @examples
+#' if (interactive()) {
+#'   demo_bib <- tempfile(fileext = ".bib")
+#'   writeLines(c(
+#'     "@article{li2008,",
+#'     "  title = {Case fatality rate of human H5N1 avian influenza},",
+#'     "  year = {2008},",
+#'     "  pmid = {18439345}",
+#'     "}"
+#'   ), demo_bib)
+#'   res <- optimize_search_queries(demo_bib, output_dir = tempdir(), max_evals = 10)
+#' }
 #' @export
 optimize_search_queries <- function(bib_path,
                                     output_dir = "output",
@@ -1278,7 +1290,7 @@ optimize_search_queries <- function(bib_path,
     md_txt <- paste(readLines(files$report_md, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
     tags$div(
       class = "border rounded p-3 bg-white",
-      HTML(markdown::markdownToHTML(text = md_txt, fragment.only = TRUE))
+      HTML(suppressWarnings(markdown::markdownToHTML(text = md_txt, fragment.only = TRUE)))
     )
   })
 
@@ -1336,6 +1348,8 @@ optimize_search_queries <- function(bib_path,
 #' @param initial_result Optional precomputed result list from [optimize_search_queries()] to display immediately on startup.
 #' @param initial_bib_label Optional display label for `initial_result`.
 #' @return A `shiny.appobj` object that can be passed to [shiny::runApp()].
+#' @examples
+#' app <- revlitquery_app()
 #' @export
 revlitquery_app <- function(initial_result = NULL, initial_bib_label = NULL) {
   shiny::shinyApp(
@@ -1351,6 +1365,10 @@ revlitquery_app <- function(initial_result = NULL, initial_bib_label = NULL) {
 #' @param launch.browser Logical; open the application in the default browser (default `TRUE`).
 #' @param ... Additional arguments passed to [shiny::runApp()].
 #' @return Invisibly returns the result of [shiny::runApp()].
+#' @examples
+#' if (interactive()) {
+#'   run_revlitquery_app()
+#' }
 #' @export
 run_revlitquery_app <- function(initial_result = NULL, initial_bib_label = NULL, launch.browser = TRUE, ...) {
   shiny::runApp(

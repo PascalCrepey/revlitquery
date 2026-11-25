@@ -15,3 +15,6 @@ Cleaned character vector.
 \description{
 Clean LaTeX markup and normalize whitespace in BibTeX field text
 }
+\examples{
+clean_latex_text("Human {H5N1} avian \\\\emph{influenza} infections")
+}

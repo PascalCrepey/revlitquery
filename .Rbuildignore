@@ -10,6 +10,7 @@
 ^pkgdown/
 ^_pkgdown\.yml$
 ^codecov\.yml$
+^cran-comments\.md$
 ^app\.R$
 ^run_query_optimizer\.R$
 ^config_example\.yml$

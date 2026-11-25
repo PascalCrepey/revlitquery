@@ -7,6 +7,16 @@
 #' @param blocks List of blocks, each `list(name = ..., field = "tiab"|"title", terms = character())`.
 #' @param exclude_terms Optional character vector of NOT terms.
 #' @return Canonical query list of class `"search_query"`.
+#' @examples
+#' q <- make_query(
+#'   blocks = list(
+#'     list(name = "topic", field = "tiab", terms = c("h5n1", "h5")),
+#'     list(name = "outcome", field = "tiab", terms = "fatal*")
+#'   ),
+#'   exclude_terms = c("h7n9", "vaccin*")
+#' )
+#' to_pubmed_query(q)
+#' to_google_scholar_query(q)
 make_query <- function(blocks, exclude_terms = character(0)) {
   clean_blocks <- lapply(seq_along(blocks), function(i) {
     b <- blocks[[i]]
@@ -229,6 +239,10 @@ google_scholar_url <- function(gs_query) {
 #'
 #' @param pm_query Raw PubMed query string.
 #' @return Approximate Google Scholar query string.
+#' @examples
+#' pubmed_to_google_scholar_approx(
+#'   '(("H5N1"[tiab] OR "H5"[tiab]) AND "fatal*"[tiab]) NOT "H7N9"[tiab]'
+#' )
 pubmed_to_google_scholar_approx <- function(pm_query) {
   q <- stringr::str_squish(as.character(pm_query %||% ""))
   if (!nzchar(q)) {

@@ -7,6 +7,8 @@
 .rate_state$pubmed_429_hits <- 0L
 
 .respect_rate_limit <- function(min_interval = 0.45) {
+  opt_int <- getOption("revlitquery.min_interval", NULL)
+  if (!is.null(opt_int)) min_interval <- as.numeric(opt_int)
   now <- proc.time()[["elapsed"]]
   last <- .rate_state$pubmed_last %||% 0
   wait <- min_interval - (now - last)

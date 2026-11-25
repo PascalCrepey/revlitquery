@@ -1,14 +1,16 @@
 Package: revlitquery
 Type: Package
-Title: Reverse Literature Review Search Query Optimizer for PubMed and Google Scholar
+Title: Reverse Literature Review Search Query Optimizer
 Version: 0.1.0
 Authors@R: person("Pascal", "Crepey", email = "pascal.crepey@ehesp.fr", role = c("aut", "cre"))
-Description: Discovers and optimizes semantically equivalent PubMed and Google
-    Scholar (<= 256 characters) search queries from a seed corpus of BibTeX
-    references. Combines morphological prefix wildcard synthesis, PICO concept
-    block discovery, timeline-stratified exclusion concept mining, and live
-    NCBI E-utilities evaluation across the sensitivity-specificity Pareto
-    frontier. Includes an interactive Shiny dashboard and CLI runner.
+Description: Discovers and optimizes semantically equivalent 'PubMed'
+    <https://pubmed.ncbi.nlm.nih.gov/> and 'Google Scholar'
+    <https://scholar.google.com/> (up to 256 characters) boolean search
+    queries from a seed corpus of 'BibTeX' references. Combines morphological
+    prefix wildcard synthesis, concept block discovery, timeline-stratified
+    exclusion concept mining, and live 'NCBI' E-utilities evaluation across the
+    sensitivity-specificity Pareto frontier. Includes an interactive 'Shiny'
+    dashboard and command-line workflow.
 License: MIT + file LICENSE
 URL: https://github.com/PascalCrepey/revlitquery,
     https://pascalcrepey.github.io/revlitquery/
@@ -22,15 +24,12 @@ Imports:
     digest,
     dplyr,
     DT,
-    fontawesome,
-    fs,
     ggplot2,
     ggrepel,
     glue,
     htmltools,
     httr2,
     igraph,
-    markdown,
     plotly,
     readr,
     rlang,
@@ -41,12 +40,14 @@ Imports:
     tibble,
     utils,
     xml2,
-    yaml,
-    zip
+    yaml
 Suggests:
+    fontawesome,
     knitr,
+    markdown,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    zip
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
