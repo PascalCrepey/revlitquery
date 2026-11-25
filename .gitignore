@@ -1,0 +1,14 @@
+# Excluded local cache, existing BibTeX/PDF files, and generated outputs
+.cache/
+data/
+output/
+
+# R & macOS artifacts
+.DS_Store
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+*.tar.gz
+*.Rcheck/

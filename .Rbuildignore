@@ -1,0 +1,14 @@
+^\.cache$
+^data$
+^output$
+^\.DS_Store$
+^app\.R$
+^run_query_optimizer\.R$
+^config_example\.yml$
+^LICENSE\.md$
+^revlitquery_.*\.tar\.gz$
+^revlitquery\.Rcheck$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.git$
+^\.gitignore$

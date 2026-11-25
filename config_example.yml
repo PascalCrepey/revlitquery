@@ -1,0 +1,42 @@
+# Example optional configuration for run_query_optimizer.R
+# Pass via: Rscript run_query_optimizer.R --bib papers.bib --config config_example.yml
+
+# Terms that MUST appear in every evaluated query (lowercase)
+# required_terms:
+#   - h5n1
+
+# Terms to completely ignore during automatic candidate extraction
+banned_terms:
+  - world health organization
+  - united states
+
+# Terms appended as NOT (...) in PubMed and -term in Google Scholar
+# exclude_terms:
+#   - title:vaccin*
+#   - poultry
+
+# Optional manual concept blocks (disables automatic block discovery when set).
+# The optimizer will still tune subsets of terms and [tiab] vs [ti] / intitle: fields
+# across the sensitivity-specificity Pareto frontier.
+# custom_blocks:
+#   pathogen:
+#     - h5n1
+#     - h5
+#     - avian influenza
+#   severity:
+#     - fatal*
+#     - case fatality
+#     - mortality
+#   population:
+#     - human*
+#     - patients
+
+# Structural limits
+max_blocks: 3
+max_terms_per_block: 5
+max_gs_chars: 256
+
+# Optional custom / benchmark PubMed queries to evaluate alongside the optimizer
+# custom_queries:
+#   - label: "Manuscript original"
+#     pubmed_query: '((H5N1[Title/Abstract] OR H5[Title/Abstract]) AND (Influenza[Title/Abstract]) AND (fatal*[Title/Abstract])) NOT (H7N9[Title/Abstract] OR H1N1[Title/Abstract] OR H1N1pdm09[Title/Abstract])'
