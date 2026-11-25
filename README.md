@@ -1,4 +1,12 @@
-# `revlitquery`: Reverse Literature Review Search Query Optimizer for PubMed & Google Scholar
+# revlitquery <a href="https://pascalcrepey.github.io/revlitquery/"><img src="man/figures/logo.png" align="right" height="139" alt="revlitquery website" /></a>
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/PascalCrepey/revlitquery/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PascalCrepey/revlitquery/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/PascalCrepey/revlitquery/graph/badge.svg)](https://app.codecov.io/gh/PascalCrepey/revlitquery)
+[![pkgdown](https://github.com/PascalCrepey/revlitquery/actions/workflows/pkgdown.yaml/badge.svg)](https://pascalcrepey.github.io/revlitquery/)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
 Given a `.bib` file of target/seed papers from a systematic or literature review, **`revlitquery`** reverse-engineers semantically equivalent **PubMed** and **Google Scholar** (`<= 256` characters) boolean search queries and optimizes their **sensitivity (seed recall)** vs. **specificity (total hit count)** Pareto frontier using NCBI E-utilities:
 
@@ -14,7 +22,7 @@ Install `revlitquery` from GitHub using `remotes` or `pak` (pass `build_vignette
 
 ```r
 # install.packages("remotes")
-remotes::install_github("pcrepey/revlitquery", build_vignettes = TRUE)
+remotes::install_github("PascalCrepey/revlitquery", build_vignettes = TRUE)
 ```
 
 Or install locally from a cloned copy of the repository:
@@ -24,9 +32,9 @@ R CMD build .
 R CMD INSTALL revlitquery_0.1.0.tar.gz
 ```
 
-## Vignettes & Documentation
+## Website & Vignettes
 
-Once installed, browse the two included vignettes:
+Browse the full documentation website at **<https://pascalcrepey.github.io/revlitquery/>**, or view the included vignettes directly from R:
 
 ```r
 # 1. Interactive Shiny Interface Guide (with step-by-step screenshots)

@@ -88,7 +88,7 @@
 #' @param max_evals Maximum live API query evaluations, default 60.
 #' @param max_gs_chars Maximum Google Scholar query length, default 256.
 #' @param use_cache Logical; cache API responses under `cache_dir`, default TRUE.
-#' @param cache_dir Optional cache directory path (defaults to `file.path(output_dir %||% tempdir(), ".cache")`).
+#' @param cache_dir Optional cache directory path (defaults to `file.path(output_dir, ".cache")`).
 #' @param custom_queries Optional character vector or list of custom PubMed queries.
 #' @param email Optional email for NCBI polite pool.
 #' @param ncbi_key Optional NCBI API key.

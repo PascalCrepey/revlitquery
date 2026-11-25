@@ -1,0 +1,123 @@
+url: https://pascalcrepey.github.io/revlitquery/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#1f6feb"
+
+home:
+  title: "revlitquery: Reverse Literature Review Search Query Optimizer"
+  description: >
+    Reverse-engineer and optimize semantically equivalent PubMed and Google Scholar
+    search queries from a BibTeX corpus of seed papers across the sensitivity-specificity
+    Pareto frontier.
+
+navbar:
+  structure:
+    left:  [intro, articles, reference]
+    right: [search, github]
+  components:
+    intro:
+      text: "Get Started"
+      href: articles/shiny-interface.html
+    articles:
+      text: "Vignettes"
+      menu:
+        - text: "Interactive Shiny Interface Guide"
+          href: articles/shiny-interface.html
+        - text: "Command-Line (CLI) and Programmatic R Workflow"
+          href: articles/cli-and-r-workflow.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/PascalCrepey/revlitquery
+      aria-label: GitHub repository
+
+reference:
+  - title: "High-Level Optimizer & Shiny Application"
+    desc: "Primary entry points to run the query optimizer or launch the interactive Shiny dashboard."
+    contents:
+      - optimize_search_queries
+      - run_revlitquery_app
+      - revlitquery_app
+
+  - title: "BibTeX Parsing & PubMed Seed Enrichment"
+    desc: "Parse BibTeX files and resolve seed articles against NCBI PubMed E-utilities."
+    contents:
+      - parse_bibtex
+      - enrich_seeds
+      - clean_latex_text
+      - normalize_doi
+      - extract_pmid_value
+      - split_keywords
+      - title_jaccard
+      - clean_title_for_query
+      - title_sig_words
+
+  - title: "Candidate Term Extraction & Concept Blocks"
+    desc: "Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies, and group terms into PICO concept blocks."
+    contents:
+      - extract_candidate_terms
+      - build_concept_blocks
+      - assign_term_family
+      - assign_term_families
+      - term_matches_text
+      - term_stems
+      - shares_stem
+      - normalize_search_text
+      - escape_regex
+      - get_stopwords
+
+  - title: "Query Construction & Translation (PubMed & Google Scholar)"
+    desc: "Canonical search query representation and translation to PubMed and Google Scholar (<= 256 chars)."
+    contents:
+      - make_query
+      - query_signature
+      - to_pubmed_query
+      - to_google_scholar_query
+      - pubmed_to_google_scholar_approx
+      - gs_char_count
+      - is_valid_gs_query
+      - pubmed_url
+      - google_scholar_url
+
+  - title: "Pareto Frontier Optimization & Exclusion Mining"
+    desc: "Two-stage Pareto frontier search, timeline-stratified exclusion concept discovery, and custom query benchmarking."
+    contents:
+      - optimize_queries
+      - discover_exclusion_hints
+      - assign_exclusion_concept
+      - compute_pareto_frontier
+      - generate_initial_candidates
+      - estimate_local_query
+      - evaluate_custom_query
+      - add_custom_query_to_result
+
+  - title: "NCBI E-utilities & Caching"
+    desc: "Low-level PubMed API clients and disk caching helpers."
+    contents:
+      - pubmed_esearch
+      - pubmed_efetch
+      - pubmed_eval_query
+      - cache_key
+      - cache_get
+      - cache_set
+
+  - title: "Reporting & Shiny UI Helpers"
+    desc: "Export reports, build interactive Plotly Pareto plots, and manage Shiny UI state."
+    contents:
+      - write_optimization_report
+      - build_pareto_plotly
+      - build_coverage_display_df
+      - recompute_recommendation
+      - build_config_from_inputs
+      - parse_term_list
+      - parse_custom_blocks_yaml
+      - blocks_to_yaml
+
+  - title: "Internal Helpers"
+    contents:
+      - starts_with(".")

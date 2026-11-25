@@ -10,6 +10,9 @@ Description: Discovers and optimizes semantically equivalent PubMed and Google
     NCBI E-utilities evaluation across the sensitivity-specificity Pareto
     frontier. Includes an interactive Shiny dashboard and CLI runner.
 License: MIT + file LICENSE
+URL: https://github.com/PascalCrepey/revlitquery,
+    https://pascalcrepey.github.io/revlitquery/
+BugReports: https://github.com/PascalCrepey/revlitquery/issues
 Encoding: UTF-8
 Depends:
     R (>= 4.1.0)
