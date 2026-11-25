@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   cli-and-r-workflow: cli-and-r-workflow.html
   shiny-interface: shiny-interface.html
-last_built: 2026-11-25T12:21Z
+last_built: 2026-11-25T12:27Z
 urls:
   reference: https://pascalcrepey.github.io/revlitquery/reference
   article: https://pascalcrepey.github.io/revlitquery/articles
