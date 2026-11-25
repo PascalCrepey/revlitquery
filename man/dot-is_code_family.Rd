@@ -6,6 +6,15 @@
 \usage{
 .is_code_family(t1, t2)
 }
+\arguments{
+\item{t1}{First candidate term.}
+
+\item{t2}{Second candidate term.}
+}
+\value{
+Logical scalar.
+}
 \description{
 Check whether two terms share an alphanumeric subtype/code prefix (e.g. h5n1 and h5)
 }
+\keyword{internal}

@@ -6,6 +6,12 @@
 \usage{
 clean_title_for_query(title)
 }
+\arguments{
+\item{title}{Input article title string.}
+}
+\value{
+Cleaned title string.
+}
 \description{
 Clean title string for search queries (strip quotes/brackets/colons that break E-utilities)
 }

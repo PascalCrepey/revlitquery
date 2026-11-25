@@ -6,6 +6,14 @@
 \usage{
 is_valid_gs_query(q, max_gs_chars = 256L)
 }
+\arguments{
+\item{q}{Canonical `search_query` object.}
+
+\item{max_gs_chars}{Maximum allowed character count (default 256).}
+}
+\value{
+Logical scalar.
+}
 \description{
 Check Google Scholar <= 256 character constraint
 }

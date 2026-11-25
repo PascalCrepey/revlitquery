@@ -6,6 +6,14 @@
 \usage{
 title_jaccard(t1, t2)
 }
+\arguments{
+\item{t1}{First title string.}
+
+\item{t2}{Second title string.}
+}
+\value{
+Numeric Jaccard similarity in `[0, 1]`.
+}
 \description{
 Compute alphanumeric lowercase token Jaccard similarity between two titles
 }

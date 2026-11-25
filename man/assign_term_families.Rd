@@ -6,6 +6,14 @@
 \usage{
 assign_term_families(terms, block1_coupled = character(0))
 }
+\arguments{
+\item{terms}{Character vector of candidate terms.}
+
+\item{block1_coupled}{Optional character vector of terms coupled to Block 1.}
+}
+\value{
+Named character vector of PICO semantic families.
+}
 \description{
 Vectorized wrapper for `assign_term_family()`
 }

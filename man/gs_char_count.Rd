@@ -6,6 +6,12 @@
 \usage{
 gs_char_count(q)
 }
+\arguments{
+\item{q}{Canonical `search_query` object.}
+}
+\value{
+Integer character count.
+}
 \description{
 Count characters in translated Google Scholar query
 }

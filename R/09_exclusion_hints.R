@@ -141,6 +141,13 @@ assign_exclusion_concept <- function(term) {
 #' @param sample_n Maximum number of non-seed PubMed articles to sample.
 #' @param top_verify Number of top exclusion candidates to verify live via `esearch`.
 #' @param max_hints Maximum number of exclusion hints to return and display (default 35).
+#' @param email Optional email for NCBI polite pool.
+#' @param ncbi_key Optional NCBI API key.
+#' @param cache_dir Cache directory path.
+#' @param use_cache Logical; whether to read/write cache.
+#' @param pm_esearch_fn Optional dependency injection for [pubmed_esearch()].
+#' @param pm_efetch_fn Optional dependency injection for [pubmed_efetch()].
+#' @param progress_cb Optional progress callback function.
 #' @return Tibble of ranked exclusion hints with `concept` column and `exclusion_blocks` attribute.
 discover_exclusion_hints <- function(base_query,
                                      seeds_df,

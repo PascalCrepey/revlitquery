@@ -14,6 +14,14 @@ pubmed_efetch(
 }
 \arguments{
 \item{pmids}{Character vector of PMIDs.}
+
+\item{email}{Optional email for NCBI tool identification.}
+
+\item{api_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Directory for RDS cache.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
 }
 \value{
 Tibble with `pmid`, `pm_title`, `pm_abstract`, `pm_mesh`, `pm_keywords`.

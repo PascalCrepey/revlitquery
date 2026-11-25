@@ -6,6 +6,15 @@
 \usage{
 .term_subsumes(t_broad, t_narrow)
 }
+\arguments{
+\item{t_broad}{Broader candidate term.}
+
+\item{t_narrow}{Narrower candidate term.}
+}
+\value{
+Logical scalar.
+}
 \description{
 Check whether term `t_broad` lexically subsumes `t_narrow` inside an OR block
 }
+\keyword{internal}

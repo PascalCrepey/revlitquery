@@ -2,7 +2,7 @@ Package: revlitquery
 Type: Package
 Title: Reverse Literature Review Search Query Optimizer for PubMed and Google Scholar
 Version: 0.1.0
-Authors@R: person("Pascal", "Crepey", email = "crepey@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Pascal", "Crepey", email = "pascal.crepey@ehesp.fr", role = c("aut", "cre"))
 Description: Discovers and optimizes semantically equivalent PubMed and Google
     Scholar (<= 256 characters) search queries from a seed corpus of BibTeX
     references. Combines morphological prefix wildcard synthesis, PICO concept
@@ -16,7 +16,6 @@ BugReports: https://github.com/PascalCrepey/revlitquery/issues
 Encoding: UTF-8
 Depends:
     R (>= 4.1.0)
-RoxygenNote: 7.3.2
 Imports:
     bslib,
     cli,
@@ -50,3 +49,4 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

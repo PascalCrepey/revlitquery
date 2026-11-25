@@ -566,7 +566,14 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
 #' @param max_evals Maximum live API query evaluations.
 #' @param max_gs_chars Maximum Google Scholar character limit (default 256).
 #' @param discover_exclusions Logical; whether to mine non-seed PubMed results for exclusion hints.
+#' @param email Optional email for NCBI polite pool.
+#' @param ncbi_key Optional NCBI API key.
+#' @param cache_dir Cache directory path.
+#' @param use_cache Logical; whether to read/write cache.
 #' @param eval_pubmed_fn Function `(pm_query, seed_pmids, ...)` returning `pm_hits`, `pm_found`, `pm_recall`, `ok`.
+#' @param pm_esearch_fn Optional dependency injection for [pubmed_esearch()].
+#' @param pm_efetch_fn Optional dependency injection for [pubmed_efetch()].
+#' @param progress_cb Optional progress callback function.
 #' @return Optimization result list containing `eval_df`, `pareto_df`, `exclusion_hints`, `recommended_sig`, `seeds_df`, `blocks`.
 optimize_queries <- function(seeds_df,
                              terms_df,
@@ -1013,6 +1020,11 @@ optimize_queries <- function(seeds_df,
 #' @param seeds_df Enriched seeds tibble.
 #' @param label Display label for the custom query.
 #' @param gs_query Optional Google Scholar query string (auto-approximated if NULL/blank).
+#' @param email Optional email for NCBI polite pool.
+#' @param ncbi_key Optional NCBI API key.
+#' @param cache_dir Cache directory path.
+#' @param use_cache Logical; whether to read/write cache.
+#' @param eval_pubmed_fn Function `(pm_query, seed_pmids, ...)` returning `pm_hits`, `pm_found`, `pm_recall`, `ok`.
 #' @return 1-row tibble matching `eval_df` schema.
 evaluate_custom_query <- function(pm_query,
                                   seeds_df,

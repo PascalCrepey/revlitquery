@@ -43,7 +43,21 @@ optimize_queries(
 
 \item{discover_exclusions}{Logical; whether to mine non-seed PubMed results for exclusion hints.}
 
+\item{email}{Optional email for NCBI polite pool.}
+
+\item{ncbi_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Cache directory path.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
+
 \item{eval_pubmed_fn}{Function `(pm_query, seed_pmids, ...)` returning `pm_hits`, `pm_found`, `pm_recall`, `ok`.}
+
+\item{pm_esearch_fn}{Optional dependency injection for [pubmed_esearch()].}
+
+\item{pm_efetch_fn}{Optional dependency injection for [pubmed_efetch()].}
+
+\item{progress_cb}{Optional progress callback function.}
 }
 \value{
 Optimization result list containing `eval_df`, `pareto_df`, `exclusion_hints`, `recommended_sig`, `seeds_df`, `blocks`.

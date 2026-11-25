@@ -6,6 +6,18 @@
 \usage{
 cache_set(cache_dir, key, value, use_cache = TRUE)
 }
+\arguments{
+\item{cache_dir}{Directory containing `.rds` cache files.}
+
+\item{key}{Cache key string returned by [cache_key()].}
+
+\item{value}{R object to serialize to disk.}
+
+\item{use_cache}{Logical; whether to write to disk cache.}
+}
+\value{
+Invisibly returns `value`.
+}
 \description{
 Write cached RDS value
 }

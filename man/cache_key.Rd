@@ -6,6 +6,14 @@
 \usage{
 cache_key(prefix, payload)
 }
+\arguments{
+\item{prefix}{String prefix identifying the cache namespace.}
+
+\item{payload}{Arbitrary R object hashed with MD5.}
+}
+\value{
+Character cache key.
+}
 \description{
 Build deterministic cache key
 }

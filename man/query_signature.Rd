@@ -6,6 +6,12 @@
 \usage{
 query_signature(q)
 }
+\arguments{
+\item{q}{Canonical `search_query` object.}
+}
+\value{
+Character scalar signature.
+}
 \description{
 Deterministic canonical signature for deduplicating queries
 }

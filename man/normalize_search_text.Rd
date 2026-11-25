@@ -6,6 +6,12 @@
 \usage{
 normalize_search_text(x)
 }
+\arguments{
+\item{x}{Character vector of texts.}
+}
+\value{
+Normalized lowercase alphanumeric text vector.
+}
 \description{
 Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)
 }

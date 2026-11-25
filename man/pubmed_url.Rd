@@ -6,6 +6,12 @@
 \usage{
 pubmed_url(pm_query)
 }
+\arguments{
+\item{pm_query}{PubMed query string.}
+}
+\value{
+URL string.
+}
 \description{
 Clickable PubMed search URL
 }

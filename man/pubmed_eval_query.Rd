@@ -17,6 +17,14 @@ pubmed_eval_query(
 \item{pm_query}{PubMed query string.}
 
 \item{seed_pmids}{Character vector of seed PMIDs.}
+
+\item{email}{Optional email for NCBI tool identification.}
+
+\item{api_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Directory for RDS cache.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
 }
 \value{
 List with `pm_hits`, `pm_found`, `pm_recall`, `ok`.

@@ -41,6 +41,9 @@ get_stopwords <- function() {
 }
 
 #' Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)
+#'
+#' @param x Character vector of texts.
+#' @return Normalized lowercase alphanumeric text vector.
 normalize_search_text <- function(x) {
   x <- tolower(as.character(x %||% ""))
   x[is.na(x)] <- ""
@@ -52,6 +55,9 @@ normalize_search_text <- function(x) {
 }
 
 #' Escape regex metacharacters in literal term
+#'
+#' @param x Character string to escape.
+#' @return Regex-escaped character string.
 escape_regex <- function(x) {
   stringr::str_replace_all(x, "([.\\^$|()*+?{}\\[\\]\\\\])", "\\\\\\1")
 }
@@ -74,6 +80,9 @@ term_matches_text <- function(term, texts) {
 }
 
 #' Simple token stemmer for lexical overlap detection across concept blocks
+#'
+#' @param term Candidate term string.
+#' @return Character vector of stemmed tokens.
 term_stems <- function(term) {
   stops <- get_stopwords()
   w <- unlist(stringr::str_split(normalize_search_text(term), " "))
@@ -98,6 +107,11 @@ term_stems <- function(term) {
 }
 
 #' Check whether two terms share an alphanumeric subtype/code prefix (e.g. h5n1 and h5)
+#'
+#' @param t1 First candidate term.
+#' @param t2 Second candidate term.
+#' @return Logical scalar.
+#' @keywords internal
 .is_code_family <- function(t1, t2) {
   t1 <- tolower(stringr::str_squish(as.character(t1 %||% "")))
   t2 <- tolower(stringr::str_squish(as.character(t2 %||% "")))
@@ -108,6 +122,11 @@ term_stems <- function(term) {
 }
 
 #' Check whether term `t_broad` lexically subsumes `t_narrow` inside an OR block
+#'
+#' @param t_broad Broader candidate term.
+#' @param t_narrow Narrower candidate term.
+#' @return Logical scalar.
+#' @keywords internal
 .term_subsumes <- function(t_broad, t_narrow) {
   t_broad <- tolower(stringr::str_squish(as.character(t_broad %||% "")))
   t_narrow <- tolower(stringr::str_squish(as.character(t_narrow %||% "")))
@@ -120,6 +139,10 @@ term_stems <- function(term) {
 }
 
 #' Check whether two terms share any significant token stem
+#'
+#' @param t1 First candidate term.
+#' @param t2 Second candidate term.
+#' @return Logical scalar.
 shares_stem <- function(t1, t2) {
   s1 <- term_stems(t1)
   s2 <- term_stems(t2)
@@ -196,6 +219,10 @@ assign_term_family <- function(term, block1_coupled = character(0)) {
 }
 
 #' Vectorized wrapper for `assign_term_family()`
+#'
+#' @param terms Character vector of candidate terms.
+#' @param block1_coupled Optional character vector of terms coupled to Block 1.
+#' @return Named character vector of PICO semantic families.
 assign_term_families <- function(terms, block1_coupled = character(0)) {
   if (length(terms) == 0L) return(stats::setNames(character(0), character(0)))
   fams <- vapply(terms, assign_term_family, character(1), block1_coupled = block1_coupled, USE.NAMES = FALSE)
@@ -273,6 +300,11 @@ assign_term_families <- function(terms, block1_coupled = character(0)) {
 #' @param max_candidates Max terms to probe against PubMed background frequency.
 #' @param probe_pubmed Logical; whether to probe PubMed for background `bg_hits`.
 #' @param eval_bg_fn Optional function `(term) -> integer` for testing without network.
+#' @param email Optional email for NCBI polite pool.
+#' @param ncbi_key Optional NCBI API key.
+#' @param cache_dir Cache directory path.
+#' @param use_cache Logical; whether to read/write cache.
+#' @param progress_cb Optional progress callback function.
 #' @return Tibble of scored candidate terms with `cov_tiab` and `cov_title` list-columns.
 extract_candidate_terms <- function(seeds_df,
                                     config = list(),

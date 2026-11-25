@@ -24,6 +24,16 @@ evaluate_custom_query(
 \item{label}{Display label for the custom query.}
 
 \item{gs_query}{Optional Google Scholar query string (auto-approximated if NULL/blank).}
+
+\item{email}{Optional email for NCBI polite pool.}
+
+\item{ncbi_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Cache directory path.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
+
+\item{eval_pubmed_fn}{Function `(pm_query, seed_pmids, ...)` returning `pm_hits`, `pm_found`, `pm_recall`, `ok`.}
 }
 \value{
 1-row tibble matching `eval_df` schema.

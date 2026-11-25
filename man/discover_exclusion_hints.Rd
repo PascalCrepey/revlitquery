@@ -32,6 +32,20 @@ discover_exclusion_hints(
 \item{top_verify}{Number of top exclusion candidates to verify live via `esearch`.}
 
 \item{max_hints}{Maximum number of exclusion hints to return and display (default 35).}
+
+\item{email}{Optional email for NCBI polite pool.}
+
+\item{ncbi_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Cache directory path.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
+
+\item{pm_esearch_fn}{Optional dependency injection for [pubmed_esearch()].}
+
+\item{pm_efetch_fn}{Optional dependency injection for [pubmed_efetch()].}
+
+\item{progress_cb}{Optional progress callback function.}
 }
 \value{
 Tibble of ranked exclusion hints with `concept` column and `exclusion_blocks` attribute.

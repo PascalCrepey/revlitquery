@@ -6,6 +6,12 @@
 \usage{
 term_stems(term)
 }
+\arguments{
+\item{term}{Candidate term string.}
+}
+\value{
+Character vector of stemmed tokens.
+}
 \description{
 Simple token stemmer for lexical overlap detection across concept blocks
 }

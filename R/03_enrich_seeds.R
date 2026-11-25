@@ -3,6 +3,10 @@
 # MeSH descriptors, and Author Keywords, with token-Jaccard title verification.
 
 #' Compute alphanumeric lowercase token Jaccard similarity between two titles
+#'
+#' @param t1 First title string.
+#' @param t2 Second title string.
+#' @return Numeric Jaccard similarity in `[0, 1]`.
 title_jaccard <- function(t1, t2) {
   tok <- function(s) {
     s <- tolower(as.character(s %||% ""))
@@ -17,6 +21,9 @@ title_jaccard <- function(t1, t2) {
 }
 
 #' Clean title string for search queries (strip quotes/brackets/colons that break E-utilities)
+#'
+#' @param title Input article title string.
+#' @return Cleaned title string.
 clean_title_for_query <- function(title) {
   s <- as.character(title %||% "")
   s <- stringr::str_replace_all(s, '["\\[\\]()]', " ")
@@ -24,6 +31,10 @@ clean_title_for_query <- function(title) {
 }
 
 #' First N significant words from a title for fallback matching
+#'
+#' @param title Input article title string.
+#' @param max_words Maximum number of significant words to retain.
+#' @return Space-separated significant words string.
 title_sig_words <- function(title, max_words = 12L) {
   s <- tolower(clean_title_for_query(title))
   s <- stringr::str_replace_all(s, "[^a-z0-9 ]+", " ")

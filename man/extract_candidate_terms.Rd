@@ -27,6 +27,16 @@ extract_candidate_terms(
 \item{probe_pubmed}{Logical; whether to probe PubMed for background `bg_hits`.}
 
 \item{eval_bg_fn}{Optional function `(term) -> integer` for testing without network.}
+
+\item{email}{Optional email for NCBI polite pool.}
+
+\item{ncbi_key}{Optional NCBI API key.}
+
+\item{cache_dir}{Cache directory path.}
+
+\item{use_cache}{Logical; whether to read/write cache.}
+
+\item{progress_cb}{Optional progress callback function.}
 }
 \value{
 Tibble of scored candidate terms with `cov_tiab` and `cov_title` list-columns.

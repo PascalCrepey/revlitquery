@@ -14,6 +14,21 @@ build_config_from_inputs(
   max_gs_chars = 256L
 )
 }
+\arguments{
+\item{required_txt}{Comma/newline-separated required terms string.}
+
+\item{banned_txt}{Comma/newline-separated banned terms string.}
+
+\item{exclude_txt}{Comma/newline-separated exclusion terms string.}
+
+\item{custom_blocks_yaml}{Optional YAML text defining custom concept blocks.}
+
+\item{max_blocks}{Maximum number of concept blocks.}
+
+\item{max_terms_per_block}{Maximum number of terms per concept block.}
+
+\item{max_gs_chars}{Maximum Google Scholar query character limit.}
+}
 \value{
 List with `ok`, `config`, and `error`.
 }

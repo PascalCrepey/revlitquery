@@ -6,6 +6,14 @@
 \usage{
 title_sig_words(title, max_words = 12L)
 }
+\arguments{
+\item{title}{Input article title string.}
+
+\item{max_words}{Maximum number of significant words to retain.}
+}
+\value{
+Space-separated significant words string.
+}
 \description{
 First N significant words from a title for fallback matching
 }

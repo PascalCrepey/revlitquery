@@ -6,6 +6,12 @@
 \usage{
 google_scholar_url(gs_query)
 }
+\arguments{
+\item{gs_query}{Google Scholar query string.}
+}
+\value{
+URL string.
+}
 \description{
 Clickable Google Scholar search URL
 }

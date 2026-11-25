@@ -6,6 +6,12 @@
 \usage{
 escape_regex(x)
 }
+\arguments{
+\item{x}{Character string to escape.}
+}
+\value{
+Regex-escaped character string.
+}
 \description{
 Escape regex metacharacters in literal term
 }

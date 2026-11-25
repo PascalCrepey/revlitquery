@@ -53,6 +53,9 @@ make_query <- function(blocks, exclude_terms = character(0)) {
 }
 
 #' Deterministic canonical signature for deduplicating queries
+#'
+#' @param q Canonical `search_query` object.
+#' @return Character scalar signature.
 query_signature <- function(q) {
   b_sigs <- vapply(q$blocks, function(b) {
     paste0(b$field, ":", paste(sort(b$terms), collapse = "|"))
@@ -185,22 +188,35 @@ to_google_scholar_query <- function(q) {
 }
 
 #' Count characters in translated Google Scholar query
+#'
+#' @param q Canonical `search_query` object.
+#' @return Integer character count.
 gs_char_count <- function(q) {
   nchar(to_google_scholar_query(q), type = "chars")
 }
 
 #' Check Google Scholar <= 256 character constraint
+#'
+#' @param q Canonical `search_query` object.
+#' @param max_gs_chars Maximum allowed character count (default 256).
+#' @return Logical scalar.
 is_valid_gs_query <- function(q, max_gs_chars = 256L) {
   gs <- to_google_scholar_query(q)
   nzchar(gs) && nchar(gs, type = "chars") <= as.integer(max_gs_chars)
 }
 
 #' Clickable PubMed search URL
+#'
+#' @param pm_query PubMed query string.
+#' @return URL string.
 pubmed_url <- function(pm_query) {
   paste0("https://pubmed.ncbi.nlm.nih.gov/?term=", utils::URLencode(pm_query, reserved = TRUE))
 }
 
 #' Clickable Google Scholar search URL
+#'
+#' @param gs_query Google Scholar query string.
+#' @return URL string.
 google_scholar_url <- function(gs_query) {
   paste0("https://scholar.google.com/scholar?q=", utils::URLencode(gs_query, reserved = TRUE))
 }

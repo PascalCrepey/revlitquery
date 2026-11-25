@@ -74,6 +74,13 @@ blocks_to_yaml <- function(blocks) {
 
 #' Validate and assemble optimizer config list from Shiny sidebar inputs
 #'
+#' @param required_txt Comma/newline-separated required terms string.
+#' @param banned_txt Comma/newline-separated banned terms string.
+#' @param exclude_txt Comma/newline-separated exclusion terms string.
+#' @param custom_blocks_yaml Optional YAML text defining custom concept blocks.
+#' @param max_blocks Maximum number of concept blocks.
+#' @param max_terms_per_block Maximum number of terms per concept block.
+#' @param max_gs_chars Maximum Google Scholar query character limit.
 #' @return List with `ok`, `config`, and `error`.
 build_config_from_inputs <- function(required_txt = "",
                                      banned_txt = "",

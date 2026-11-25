@@ -6,6 +6,16 @@
 \usage{
 cache_get(cache_dir, key, use_cache = TRUE)
 }
+\arguments{
+\item{cache_dir}{Directory containing `.rds` cache files.}
+
+\item{key}{Cache key string returned by [cache_key()].}
+
+\item{use_cache}{Logical; whether to read from disk cache.}
+}
+\value{
+Cached R object or `NULL` on cache miss.
+}
 \description{
 Read cached RDS value if available
 }

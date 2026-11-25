@@ -6,6 +6,14 @@
 \usage{
 shares_stem(t1, t2)
 }
+\arguments{
+\item{t1}{First candidate term.}
+
+\item{t2}{Second candidate term.}
+}
+\value{
+Logical scalar.
+}
 \description{
 Check whether two terms share any significant token stem
 }
