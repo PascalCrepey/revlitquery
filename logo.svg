@@ -1,0 +1,216 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 600" width="520" height="600">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1528"/>
+      <stop offset="52%" stop-color="#132a4a"/>
+      <stop offset="100%" stop-color="#1b3b6f"/>
+    </linearGradient>
+
+    <!-- Outer Hex Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+
+    <!-- Lens Glass Gradient -->
+    <radialGradient id="lensGrad" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1e3a6e" stop-opacity="0.75"/>
+      <stop offset="75%" stop-color="#0a162b" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#0f2547" stop-opacity="0.98"/>
+    </radialGradient>
+
+    <!-- Pareto Curve Gradient -->
+    <linearGradient id="paretoGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
+
+    <!-- Soft Glow Filter -->
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Clip to Inner Hexagon -->
+    <clipPath id="hexClip">
+      <polygon points="260,18 495,154 495,446 260,582 25,446 25,154"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer Hexagon Shadow & Border -->
+  <polygon points="260,6 508,148 508,452 260,594 12,452 12,148"
+           fill="url(#borderGrad)"/>
+
+  <!-- Inner Hexagon Background -->
+  <polygon points="260,20 494,155 494,445 260,580 26,445 26,155"
+           fill="url(#bgGrad)"/>
+
+  <!-- Clipped Interior Content -->
+  <g clip-path="url(#hexClip)">
+    <!-- Subtle Background Hex Grid Lines -->
+    <g stroke="#38bdf8" stroke-opacity="0.08" stroke-width="1">
+      <line x1="26" y1="210" x2="494" y2="210"/>
+      <line x1="26" y1="275" x2="494" y2="275"/>
+      <line x1="26" y1="340" x2="494" y2="340"/>
+      <line x1="140" y1="20" x2="140" y2="430"/>
+      <line x1="260" y1="20" x2="260" y2="430"/>
+      <line x1="380" y1="20" x2="380" y2="430"/>
+    </g>
+
+    <!-- Boolean Syntax Pill Banner at Top -->
+    <g transform="translate(115, 76)">
+      <rect x="0" y="0" width="290" height="32" rx="16"
+            fill="#0a162c" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.5"/>
+      <text x="145" y="21" text-anchor="middle"
+            font-family="Menlo, Monaco, Consolas, 'Courier New', monospace"
+            font-size="13.5" font-weight="700" fill="#e2e8f0">
+        <tspan fill="#38bdf8">(A OR B)</tspan>
+        <tspan fill="#94a3b8"> AND </tspan>
+        <tspan fill="#60a5fa">C*</tspan>
+        <tspan fill="#94a3b8"> NOT </tspan>
+        <tspan fill="#fb7185">(D OR E*)</tspan>
+      </text>
+    </g>
+
+    <!-- LEFT: Stacked BibTeX Seed Papers Card -->
+    <g transform="translate(56, 152)">
+      <!-- Back paper card 2 -->
+      <rect x="-8" y="14" width="118" height="148" rx="10"
+            fill="#162d52" stroke="#475569" stroke-width="1.5" transform="rotate(-7 50 85)"/>
+      <!-- Back paper card 1 -->
+      <rect x="-3" y="7" width="118" height="148" rx="10"
+            fill="#1e3a68" stroke="#64748b" stroke-width="1.5" transform="rotate(-3 55 85)"/>
+      <!-- Front BibTeX card -->
+      <rect x="4" y="0" width="120" height="150" rx="10"
+            fill="#f8fafc" stroke="#38bdf8" stroke-width="2.5"/>
+
+      <!-- .bib Header Pill -->
+      <rect x="16" y="13" width="58" height="22" rx="5" fill="#1e40af"/>
+      <text x="45" y="28" text-anchor="middle"
+            font-family="Menlo, Monaco, Consolas, monospace"
+            font-size="12.5" font-weight="800" fill="#ffffff">@.bib</text>
+
+      <!-- PMID tag -->
+      <rect x="80" y="15" width="32" height="18" rx="4" fill="#dbeafe"/>
+      <text x="96" y="27" text-anchor="middle"
+            font-family="Helvetica, Arial, sans-serif"
+            font-size="9" font-weight="700" fill="#1e3a8a">SEEDS</text>
+
+      <!-- Simulated Title & Abstract lines on seed card -->
+      <rect x="16" y="47" width="94" height="6" rx="3" fill="#0f172a"/>
+      <rect x="16" y="59" width="76" height="6" rx="3" fill="#334155"/>
+
+      <!-- Highlighted extracted terms -->
+      <rect x="16" y="77" width="42" height="10" rx="3" fill="#bae6fd"/>
+      <rect x="62" y="79.5" width="48" height="5" rx="2.5" fill="#cbd5e1"/>
+
+      <rect x="16" y="96.5" width="52" height="5" rx="2.5" fill="#cbd5e1"/>
+      <rect x="72" y="94" width="38" height="10" rx="3" fill="#fecdd3"/>
+
+      <rect x="16" y="111" width="34" height="10" rx="3" fill="#bae6fd"/>
+      <rect x="54" y="113.5" width="56" height="5" rx="2.5" fill="#cbd5e1"/>
+
+      <rect x="16" y="129" width="84" height="5" rx="2.5" fill="#cbd5e1"/>
+    </g>
+
+    <!-- Reverse Flow Arrow (Seeds -> Pareto Lens) -->
+    <g filter="url(#glow)">
+      <path d="M 184 228 C 206 228, 212 228, 232 228"
+            fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+      <polygon points="242,228 228,219 228,237" fill="#38bdf8"/>
+    </g>
+
+    <!-- RIGHT: Magnifying Glass + Pareto Frontier -->
+    <g transform="translate(245, 128)">
+      <!-- Magnifying Glass Handle -->
+      <line x1="168" y1="168" x2="215" y2="215"
+            stroke="#1e293b" stroke-width="22" stroke-linecap="round"/>
+      <line x1="168" y1="168" x2="215" y2="215"
+            stroke="#60a5fa" stroke-width="14" stroke-linecap="round"/>
+
+      <!-- Lens Circle -->
+      <circle cx="105" cy="105" r="92"
+              fill="url(#lensGrad)" stroke="#38bdf8" stroke-width="5.5"/>
+      <circle cx="105" cy="105" r="84"
+              fill="none" stroke="#93c5fd" stroke-opacity="0.3" stroke-width="1.5"/>
+
+      <!-- Coordinate Axes inside Lens -->
+      <line x1="42" y1="158" x2="172" y2="158" stroke="#64748b" stroke-width="2"/>
+      <line x1="42" y1="42" x2="42" y2="158" stroke="#64748b" stroke-width="2"/>
+
+      <!-- Target Threshold Dashed Lines (Min Recall & Max Hits) -->
+      <line x1="42" y1="78" x2="170" y2="78"
+            stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,4"/>
+      <line x1="132" y1="44" x2="132" y2="158"
+            stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+      <!-- Dominated Gray Points -->
+      <circle cx="118" cy="96" r="4" fill="#64748b" fill-opacity="0.65"/>
+      <circle cx="146" cy="88" r="4" fill="#64748b" fill-opacity="0.65"/>
+      <circle cx="104" cy="116" r="4" fill="#64748b" fill-opacity="0.65"/>
+      <circle cx="126" cy="122" r="4" fill="#64748b" fill-opacity="0.65"/>
+      <circle cx="88" cy="134" r="4" fill="#64748b" fill-opacity="0.65"/>
+      <circle cx="152" cy="112" r="4" fill="#64748b" fill-opacity="0.65"/>
+
+      <!-- Pareto Frontier Curve -->
+      <path d="M 55 128 L 66 96 L 84 74 L 112 58"
+            fill="none" stroke="url(#paretoGrad)" stroke-width="4"
+            stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+      <!-- Pareto Frontier Nodes -->
+      <circle cx="55" cy="128" r="5.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.8"/>
+      <circle cx="66" cy="96" r="5.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.8"/>
+      <circle cx="84" cy="74" r="5.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.8"/>
+
+      <!-- Recommended Optimal Pareto Query (Q1 Star / Bullseye) -->
+      <circle cx="112" cy="58" r="10" fill="#f43f5e" fill-opacity="0.35"/>
+      <circle cx="112" cy="58" r="7" fill="#f43f5e" stroke="#ffffff" stroke-width="2.2"/>
+
+      <!-- Axis Mini Labels -->
+      <text x="108" y="174" text-anchor="middle"
+            font-family="Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="700" fill="#94a3b8">PUBMED HITS (LOG)</text>
+      <text x="58" y="48" text-anchor="start"
+            font-family="Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="700" fill="#38bdf8">100% RECALL</text>
+    </g>
+
+    <!-- Bottom Dark Banner for Package Name -->
+    <rect x="10" y="376" width="500" height="210" fill="#071020" fill-opacity="0.76"/>
+    <line x1="45" y1="376" x2="475" y2="376" stroke="#38bdf8" stroke-opacity="0.45" stroke-width="1.5"/>
+
+    <!-- Package Title: revlitquery -->
+    <text x="260" y="440" text-anchor="middle"
+          font-family="'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="54" font-weight="800" letter-spacing="0.5" fill="#ffffff">
+      revlit<tspan fill="#38bdf8">query</tspan>
+    </text>
+
+    <!-- Subtitle -->
+    <text x="260" y="472" text-anchor="middle"
+          font-family="'SF Pro Text', 'Segoe UI', Helvetica, Arial, sans-serif"
+          font-size="11.5" font-weight="700" letter-spacing="1.5" fill="#94a3b8">
+      REVERSE LITERATURE QUERY OPTIMIZER
+    </text>
+
+    <!-- Database Badges -->
+    <g transform="translate(166, 488)">
+      <rect x="0" y="0" width="84" height="22" rx="11" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+      <text x="42" y="15" text-anchor="middle"
+            font-family="Helvetica, Arial, sans-serif"
+            font-size="10.5" font-weight="700" fill="#e0f2fe">PubMed</text>
+
+      <rect x="94" y="0" width="94" height="22" rx="11" fill="#1e3a8a" stroke="#38bdf8" stroke-width="1"/>
+      <text x="141" y="15" text-anchor="middle"
+            font-family="Helvetica, Arial, sans-serif"
+            font-size="10.5" font-weight="700" fill="#e0f2fe">Google Scholar</text>
+    </g>
+  </g>
+
+  <!-- Inner Crisp Hex Rim Highlight -->
+  <polygon points="260,20 494,155 494,445 260,580 26,445 26,155"
+           fill="none" stroke="#bae6fd" stroke-opacity="0.45" stroke-width="2"/>
+</svg>

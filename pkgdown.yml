@@ -1,0 +1,10 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  cli-and-r-workflow: cli-and-r-workflow.html
+  shiny-interface: shiny-interface.html
+last_built: 2026-11-25T10:46Z
+urls:
+  reference: https://pascalcrepey.github.io/revlitquery/reference
+  article: https://pascalcrepey.github.io/revlitquery/articles
