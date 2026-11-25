@@ -17,6 +17,7 @@
 #' )
 #' to_pubmed_query(q)
 #' to_google_scholar_query(q)
+#' @export
 make_query <- function(blocks, exclude_terms = character(0)) {
   clean_blocks <- lapply(seq_along(blocks), function(i) {
     b <- blocks[[i]]
@@ -66,6 +67,7 @@ make_query <- function(blocks, exclude_terms = character(0)) {
 #'
 #' @param q Canonical `search_query` object.
 #' @return Character scalar signature.
+#' @export
 query_signature <- function(q) {
   b_sigs <- vapply(q$blocks, function(b) {
     paste0(b$field, ":", paste(sort(b$terms), collapse = "|"))
@@ -143,6 +145,7 @@ query_signature <- function(q) {
 #'
 #' @param q Canonical `search_query` object.
 #' @return Character scalar.
+#' @export
 to_pubmed_query <- function(q) {
   if (length(q$blocks) == 0L) {
     return("")
@@ -175,6 +178,7 @@ to_pubmed_query <- function(q) {
 #'
 #' @param q Canonical `search_query` object.
 #' @return Character scalar.
+#' @export
 to_google_scholar_query <- function(q) {
   if (length(q$blocks) == 0L) {
     return("")
@@ -201,6 +205,7 @@ to_google_scholar_query <- function(q) {
 #'
 #' @param q Canonical `search_query` object.
 #' @return Integer character count.
+#' @export
 gs_char_count <- function(q) {
   nchar(to_google_scholar_query(q), type = "chars")
 }
@@ -210,6 +215,7 @@ gs_char_count <- function(q) {
 #' @param q Canonical `search_query` object.
 #' @param max_gs_chars Maximum allowed character count (default 256).
 #' @return Logical scalar.
+#' @export
 is_valid_gs_query <- function(q, max_gs_chars = 256L) {
   gs <- to_google_scholar_query(q)
   nzchar(gs) && nchar(gs, type = "chars") <= as.integer(max_gs_chars)
@@ -219,6 +225,7 @@ is_valid_gs_query <- function(q, max_gs_chars = 256L) {
 #'
 #' @param pm_query PubMed query string.
 #' @return URL string.
+#' @export
 pubmed_url <- function(pm_query) {
   paste0("https://pubmed.ncbi.nlm.nih.gov/?term=", utils::URLencode(pm_query, reserved = TRUE))
 }
@@ -227,6 +234,7 @@ pubmed_url <- function(pm_query) {
 #'
 #' @param gs_query Google Scholar query string.
 #' @return URL string.
+#' @export
 google_scholar_url <- function(gs_query) {
   paste0("https://scholar.google.com/scholar?q=", utils::URLencode(gs_query, reserved = TRUE))
 }
@@ -243,6 +251,7 @@ google_scholar_url <- function(gs_query) {
 #' pubmed_to_google_scholar_approx(
 #'   '(("H5N1"[tiab] OR "H5"[tiab]) AND "fatal*"[tiab]) NOT "H7N9"[tiab]'
 #' )
+#' @export
 pubmed_to_google_scholar_approx <- function(pm_query) {
   q <- stringr::str_squish(as.character(pm_query %||% ""))
   if (!nzchar(q)) {

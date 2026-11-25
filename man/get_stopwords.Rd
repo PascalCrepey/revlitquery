@@ -6,6 +6,9 @@
 \usage{
 get_stopwords()
 }
+\value{
+Character vector of stopwords.
+}
 \description{
 Stopword list (standard English + academic/methods filler)
 }

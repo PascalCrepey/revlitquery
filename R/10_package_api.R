@@ -105,6 +105,7 @@
 #'   ), demo_bib)
 #'   res <- optimize_search_queries(demo_bib, output_dir = tempdir(), max_evals = 10)
 #' }
+#' @importFrom rlang .data
 #' @export
 optimize_search_queries <- function(bib_path,
                                     output_dir = "output",

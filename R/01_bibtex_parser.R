@@ -8,6 +8,7 @@
 #' @return Cleaned character vector.
 #' @examples
 #' clean_latex_text("Human {H5N1} avian \\emph{influenza} infections")
+#' @export
 clean_latex_text <- function(x) {
   if (is.null(x) || length(x) == 0L) return(character(0))
   out <- as.character(x)
@@ -61,6 +62,7 @@ clean_latex_text <- function(x) {
 #' @return Normalized DOI string (empty string if missing).
 #' @examples
 #' normalize_doi("https://doi.org/10.1056/NEJMra052211")
+#' @export
 normalize_doi <- function(x) {
   if (is.null(x) || length(x) == 0L) return(character(0))
   out <- as.character(x)
@@ -78,6 +80,7 @@ normalize_doi <- function(x) {
 #' @param url_field Optional url field.
 #' @param note_field Optional note field.
 #' @return Character scalar (digits or "").
+#' @export
 extract_pmid_value <- function(pmid_field = "", url_field = "", note_field = "") {
   cand <- stringr::str_trim(as.character(pmid_field %||% ""))
   if (nzchar(cand)) {
@@ -98,6 +101,7 @@ extract_pmid_value <- function(pmid_field = "", url_field = "", note_field = "")
 #'
 #' @param kw_str Raw keywords string.
 #' @return Character vector of unique keywords.
+#' @export
 split_keywords <- function(kw_str) {
   if (is.null(kw_str) || is.na(kw_str) || !nzchar(stringr::str_trim(kw_str))) {
     return(character(0))
@@ -250,6 +254,7 @@ split_keywords <- function(kw_str) {
 #' ), tmp_bib)
 #' parse_bibtex(tmp_bib)
 #' unlink(tmp_bib)
+#' @export
 parse_bibtex <- function(path) {
   if (!file.exists(path)) {
     stop("BibTeX file not found: ", path, call. = FALSE)

@@ -7,6 +7,7 @@
 #' @param t1 First title string.
 #' @param t2 Second title string.
 #' @return Numeric Jaccard similarity in `[0, 1]`.
+#' @export
 title_jaccard <- function(t1, t2) {
   tok <- function(s) {
     s <- tolower(as.character(s %||% ""))
@@ -24,6 +25,7 @@ title_jaccard <- function(t1, t2) {
 #'
 #' @param title Input article title string.
 #' @return Cleaned title string.
+#' @export
 clean_title_for_query <- function(title) {
   s <- as.character(title %||% "")
   s <- stringr::str_replace_all(s, '["\\[\\]()]', " ")
@@ -35,6 +37,7 @@ clean_title_for_query <- function(title) {
 #' @param title Input article title string.
 #' @param max_words Maximum number of significant words to retain.
 #' @return Space-separated significant words string.
+#' @export
 title_sig_words <- function(title, max_words = 12L) {
   s <- tolower(clean_title_for_query(title))
   s <- stringr::str_replace_all(s, "[^a-z0-9 ]+", " ")
@@ -56,6 +59,7 @@ title_sig_words <- function(title, max_words = 12L) {
 #' @param progress_cb Optional progress callback function.
 #' @return Enriched tibble with `full_title`, `full_abstract`, `full_text`,
 #'   `pmid`, `in_pubmed`, `mesh_terms`, `all_keywords`.
+#' @export
 enrich_seeds <- function(seeds_df,
                          email = NULL,
                          ncbi_key = NULL,

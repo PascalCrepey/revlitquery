@@ -30,6 +30,7 @@
 #' @param term Single candidate exclusion term (may end with `*`).
 #' @return One of `"competing_subtypes"`, `"experimental_lab"`,
 #'   `"vaccines_immunology"`, `"veterinary_ecology"`, or `"general_noise"`.
+#' @export
 assign_exclusion_concept <- function(term) {
   t_raw <- tolower(stringr::str_squish(as.character(term %||% "")))
   if (!nzchar(t_raw)) return("general_noise")
@@ -149,6 +150,7 @@ assign_exclusion_concept <- function(term) {
 #' @param pm_efetch_fn Optional dependency injection for [pubmed_efetch()].
 #' @param progress_cb Optional progress callback function.
 #' @return Tibble of ranked exclusion hints with `concept` column and `exclusion_blocks` attribute.
+#' @export
 discover_exclusion_hints <- function(base_query,
                                      seeds_df,
                                      base_pm_hits = NA_integer_,

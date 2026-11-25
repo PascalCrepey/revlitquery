@@ -5,6 +5,7 @@
 #'
 #' @param txt Character scalar.
 #' @return Cleaned lowercase unique character vector.
+#' @export
 parse_term_list <- function(txt) {
   if (is.null(txt) || length(txt) == 0L || is.na(txt)) return(character(0))
   raw <- as.character(txt[1L])
@@ -18,6 +19,7 @@ parse_term_list <- function(txt) {
 #'
 #' @param txt YAML text representing a named mapping of term lists.
 #' @return List with `ok` (logical), `blocks` (named list or NULL), `error` (character or NULL).
+#' @export
 parse_custom_blocks_yaml <- function(txt) {
   if (is.null(txt) || length(txt) == 0L || is.na(txt)) {
     return(list(ok = TRUE, blocks = NULL, error = NULL))
@@ -63,6 +65,7 @@ parse_custom_blocks_yaml <- function(txt) {
 #'
 #' @param blocks List of `list(name = ..., terms = ...)`.
 #' @return Character scalar YAML string.
+#' @export
 blocks_to_yaml <- function(blocks) {
   if (is.null(blocks) || length(blocks) == 0L) return("")
   named <- stats::setNames(
@@ -82,6 +85,7 @@ blocks_to_yaml <- function(blocks) {
 #' @param max_terms_per_block Maximum number of terms per concept block.
 #' @param max_gs_chars Maximum Google Scholar query character limit.
 #' @return List with `ok`, `config`, and `error`.
+#' @export
 build_config_from_inputs <- function(required_txt = "",
                                      banned_txt = "",
                                      exclude_txt = "",
@@ -115,6 +119,7 @@ build_config_from_inputs <- function(required_txt = "",
 #' @param min_recall Minimum seed recall in `0..1`.
 #' @param max_hits Maximum PubMed hit threshold (`Inf` or numeric).
 #' @return List with updated `pareto_df`, `recommended_sig`, and `recommended_status`.
+#' @export
 recompute_recommendation <- function(pareto_df, min_recall = 0.60, max_hits = Inf) {
   if (is.null(pareto_df) || nrow(pareto_df) == 0L) {
     return(list(
@@ -164,6 +169,7 @@ recompute_recommendation <- function(pareto_df, min_recall = 0.60, max_hits = In
 #' @param max_hits Optional max PubMed hit threshold (`Inf` if none).
 #' @param selected_eval_id Currently inspected `eval_id`.
 #' @return A `plotly` htmlwidget.
+#' @export
 build_pareto_plotly <- function(eval_df,
                                 pareto_df,
                                 selected_rank = NULL,
@@ -353,6 +359,7 @@ build_pareto_plotly <- function(eval_df,
 #' @param pareto_df Pareto frontier tibble.
 #' @param eval_df Optional all evaluated queries tibble (for custom queries).
 #' @return Tibble ready for `DT::datatable()`.
+#' @export
 build_coverage_display_df <- function(seeds_df, pareto_df, eval_df = NULL) {
   if (is.null(seeds_df) || nrow(seeds_df) == 0L) return(tibble::tibble())
 

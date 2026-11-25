@@ -8,6 +8,7 @@
 #' @param terms_df Scored candidate terms tibble.
 #' @param seeds_df Enriched seeds tibble.
 #' @return List with `local_cov`, `local_found`, `local_recall`, `est_hits`.
+#' @export
 estimate_local_query <- function(q, terms_df, seeds_df) {
   n_seeds <- nrow(seeds_df)
   raw_texts <- as.character(seeds_df$full_text %||% paste(seeds_df$title, seeds_df$abstract))
@@ -121,6 +122,7 @@ estimate_local_query <- function(q, terms_df, seeds_df) {
 #' @param max_gs_chars Maximum Google Scholar query characters (default 256).
 #' @param max_candidates Maximum initial candidates to return.
 #' @return List of `search_query` objects.
+#' @export
 generate_initial_candidates <- function(blocks,
                                         terms_df,
                                         seeds_df,
@@ -306,6 +308,7 @@ generate_initial_candidates <- function(blocks,
 #' @param eval_df Data frame / tibble of evaluated queries.
 #' @param max_hits Optional maximum PubMed hit count cap.
 #' @return Logical vector of length `nrow(eval_df)`.
+#' @export
 compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
   n <- nrow(eval_df)
   if (n == 0L) {
@@ -575,6 +578,7 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
 #' @param pm_efetch_fn Optional dependency injection for [pubmed_efetch()].
 #' @param progress_cb Optional progress callback function.
 #' @return Optimization result list containing `eval_df`, `pareto_df`, `exclusion_hints`, `recommended_sig`, `seeds_df`, `blocks`.
+#' @export
 optimize_queries <- function(seeds_df,
                              terms_df,
                              blocks,
@@ -1026,6 +1030,7 @@ optimize_queries <- function(seeds_df,
 #' @param use_cache Logical; whether to read/write cache.
 #' @param eval_pubmed_fn Function `(pm_query, seed_pmids, ...)` returning `pm_hits`, `pm_found`, `pm_recall`, `ok`.
 #' @return 1-row tibble matching `eval_df` schema.
+#' @export
 evaluate_custom_query <- function(pm_query,
                                   seeds_df,
                                   label = "Custom",
@@ -1106,6 +1111,7 @@ evaluate_custom_query <- function(pm_query,
 #' @param result Optimization result list from `optimize_queries()` (or minimal shell).
 #' @param custom_row 1-row tibble returned by `evaluate_custom_query()`.
 #' @return Updated optimization result list with `eval_df` and `pareto_df` recomputed.
+#' @export
 add_custom_query_to_result <- function(result, custom_row) {
   eval_df <- result$eval_df %||% tibble::tibble()
   max_hits <- result$max_hits %||% Inf

@@ -25,6 +25,7 @@
 #' @param prefix String prefix identifying the cache namespace.
 #' @param payload Arbitrary R object hashed with MD5.
 #' @return Character cache key.
+#' @export
 cache_key <- function(prefix, payload) {
   paste0(prefix, "_", digest::digest(payload, algo = "md5"))
 }
@@ -35,6 +36,7 @@ cache_key <- function(prefix, payload) {
 #' @param key Cache key string returned by [cache_key()].
 #' @param use_cache Logical; whether to read from disk cache.
 #' @return Cached R object or `NULL` on cache miss.
+#' @export
 cache_get <- function(cache_dir, key, use_cache = TRUE) {
   if (!isTRUE(use_cache) || is.null(cache_dir) || !nzchar(cache_dir)) return(NULL)
   path <- file.path(cache_dir, paste0(key, ".rds"))
@@ -51,6 +53,7 @@ cache_get <- function(cache_dir, key, use_cache = TRUE) {
 #' @param value R object to serialize to disk.
 #' @param use_cache Logical; whether to write to disk cache.
 #' @return Invisibly returns `value`.
+#' @export
 cache_set <- function(cache_dir, key, value, use_cache = TRUE) {
   if (!isTRUE(use_cache) || is.null(cache_dir) || !nzchar(cache_dir)) return(invisible(NULL))
   if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
@@ -77,6 +80,7 @@ cache_set <- function(cache_dir, key, value, use_cache = TRUE) {
 #' @param cache_dir Directory for RDS cache.
 #' @param use_cache Logical; whether to read/write cache.
 #' @return List with `count` (integer), `idlist` (character), `warnings` (character), `ok` (logical).
+#' @export
 pubmed_esearch <- function(term, retmax = 0L, email = NULL, api_key = NULL,
                            cache_dir = ".cache", use_cache = TRUE) {
   retmax <- as.integer(retmax)
@@ -175,6 +179,7 @@ pubmed_esearch <- function(term, retmax = 0L, email = NULL, api_key = NULL,
 #' @param cache_dir Directory for RDS cache.
 #' @param use_cache Logical; whether to read/write cache.
 #' @return Tibble with `pmid`, `pm_title`, `pm_abstract`, `pm_mesh`, `pm_keywords`.
+#' @export
 pubmed_efetch <- function(pmids, email = NULL, api_key = NULL,
                           cache_dir = ".cache", use_cache = TRUE) {
   pmids <- unique(as.character(pmids[!is.na(pmids) & nzchar(pmids)]))
@@ -338,6 +343,7 @@ pubmed_efetch <- function(pmids, email = NULL, api_key = NULL,
 #' @param cache_dir Directory for RDS cache.
 #' @param use_cache Logical; whether to read/write cache.
 #' @return List with `pm_hits`, `pm_found`, `pm_recall`, `ok`.
+#' @export
 pubmed_eval_query <- function(pm_query, seed_pmids, email = NULL, api_key = NULL,
                               cache_dir = ".cache", use_cache = TRUE) {
   seed_pmids <- unique(as.character(seed_pmids[!is.na(seed_pmids) & nzchar(seed_pmids)]))

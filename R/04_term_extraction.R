@@ -3,6 +3,8 @@
 # and stem-disjoint automatic concept block discovery.
 
 #' Stopword list (standard English + academic/methods filler)
+#' @return Character vector of stopwords.
+#' @export
 get_stopwords <- function() {
   unique(c(
     # Standard English
@@ -44,6 +46,7 @@ get_stopwords <- function() {
 #'
 #' @param x Character vector of texts.
 #' @return Normalized lowercase alphanumeric text vector.
+#' @export
 normalize_search_text <- function(x) {
   x <- tolower(as.character(x %||% ""))
   x[is.na(x)] <- ""
@@ -58,6 +61,7 @@ normalize_search_text <- function(x) {
 #'
 #' @param x Character string to escape.
 #' @return Regex-escaped character string.
+#' @export
 escape_regex <- function(x) {
   stringr::str_replace_all(x, "([.\\^$|()*+?{}\\[\\]\\\\])", "\\\\\\1")
 }
@@ -67,6 +71,7 @@ escape_regex <- function(x) {
 #' @param term Single candidate term.
 #' @param texts Character vector of texts.
 #' @return Logical vector of length `length(texts)`.
+#' @export
 term_matches_text <- function(term, texts) {
   if (!nzchar(term) || length(texts) == 0L) return(rep(FALSE, length(texts)))
   t_norm <- stringr::str_squish(tolower(stringr::str_replace_all(term, "[-/]+", " ")))
@@ -83,6 +88,7 @@ term_matches_text <- function(term, texts) {
 #'
 #' @param term Candidate term string.
 #' @return Character vector of stemmed tokens.
+#' @export
 term_stems <- function(term) {
   stops <- get_stopwords()
   w <- unlist(stringr::str_split(normalize_search_text(term), " "))
@@ -143,6 +149,7 @@ term_stems <- function(term) {
 #' @param t1 First candidate term.
 #' @param t2 Second candidate term.
 #' @return Logical scalar.
+#' @export
 shares_stem <- function(t1, t2) {
   s1 <- term_stems(t1)
   s2 <- term_stems(t2)
@@ -197,6 +204,7 @@ shares_stem <- function(t1, t2) {
 #' @param block1_coupled Optional character vector of terms coupled to Block 1.
 #' @return One of `"primary_topic"`, `"outcome_severity"`, `"population_host"`,
 #'   `"epi_methods"`, or `"other"`.
+#' @export
 assign_term_family <- function(term, block1_coupled = character(0)) {
   t_raw <- tolower(stringr::str_squish(as.character(term %||% "")))
   if (!nzchar(t_raw)) return("other")
@@ -223,6 +231,7 @@ assign_term_family <- function(term, block1_coupled = character(0)) {
 #' @param terms Character vector of candidate terms.
 #' @param block1_coupled Optional character vector of terms coupled to Block 1.
 #' @return Named character vector of PICO semantic families.
+#' @export
 assign_term_families <- function(terms, block1_coupled = character(0)) {
   if (length(terms) == 0L) return(stats::setNames(character(0), character(0)))
   fams <- vapply(terms, assign_term_family, character(1), block1_coupled = block1_coupled, USE.NAMES = FALSE)
@@ -306,6 +315,7 @@ assign_term_families <- function(terms, block1_coupled = character(0)) {
 #' @param use_cache Logical; whether to read/write cache.
 #' @param progress_cb Optional progress callback function.
 #' @return Tibble of scored candidate terms with `cov_tiab` and `cov_title` list-columns.
+#' @export
 extract_candidate_terms <- function(seeds_df,
                                     config = list(),
                                     max_candidates = 45L,
@@ -555,6 +565,7 @@ extract_candidate_terms <- function(seeds_df,
 #' @param probe_selectivity Logical or NULL (defaults to TRUE when `terms_df` was probed live).
 #' @param eval_joint_fn Optional function `(t1, t2) -> integer` returning PubMed joint hit count.
 #' @return List of block lists `list(name = ..., terms = ...)`.
+#' @export
 build_concept_blocks <- function(terms_df,
                                  seeds_df,
                                  config = list(),

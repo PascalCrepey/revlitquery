@@ -6,6 +6,7 @@
 #' @param result Optimization result list from `optimize_queries()`.
 #' @param output_dir Output directory path.
 #' @return Invisibly returns list of generated file paths.
+#' @export
 write_optimization_report <- function(result, output_dir = "output") {
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
