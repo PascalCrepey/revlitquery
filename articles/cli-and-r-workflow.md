@@ -224,7 +224,7 @@ library(revlitquery)
 # 1. Write and parse a 6-article demo BibTeX file
 demo_bib <- file.path(tempdir(), "demo_seeds.bib")
 revlitquery:::.write_demo_bibtex(demo_bib)
-#> [1] "/tmp/RtmplhtVxH/demo_seeds.bib"
+#> [1] "/tmp/RtmpHBjtWX/demo_seeds.bib"
 
 seeds_df <- parse_bibtex(demo_bib)
 seeds_df[, c("citekey", "year", "pmid", "title")]

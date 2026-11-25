@@ -7,3 +7,7 @@ Stopword list (standard English + academic/methods filler)
 ``` r
 get_stopwords()
 ```
+
+## Value
+
+Character vector of stopwords.
