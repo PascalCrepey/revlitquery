@@ -99,20 +99,28 @@ pubmed_esearch <- function(term, retmax = 0L, email = NULL, api_key = NULL,
   interval <- if (has_key) 0.14 else (.rate_state$pubmed_interval %||% 0.45)
   .respect_rate_limit(interval)
 
+  eff_email <- if (!is.null(email) && nzchar(email)) {
+    email
+  } else if (nzchar(Sys.getenv("NCBI_EMAIL", ""))) {
+    Sys.getenv("NCBI_EMAIL")
+  } else {
+    getOption("revlitquery.ncbi_email", "")
+  }
   body <- list(
     db = "pubmed",
     term = term,
     retmax = as.character(retmax),
     retmode = "json",
-    tool = "r_query_optimizer"
+    tool = "revlitquery"
   )
-  if (!is.null(email) && nzchar(email)) body$email <- email
+  if (!is.null(eff_email) && nzchar(eff_email)) body$email <- eff_email
   if (has_key) body$api_key <- api_key
 
   out <- tryCatch({
     on.exit(.mark_request_done(), add = TRUE)
     t_start <- proc.time()[["elapsed"]]
     req <- httr2::request("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi") |>
+      httr2::req_user_agent("revlitquery (https://github.com/PascalCrepey/revlitquery)") |>
       httr2::req_body_form(!!!body) |>
       httr2::req_retry(max_tries = 4, is_transient = .is_short_transient, max_seconds = 20, backoff = ~ 1.2 * (2 ^ .x)) |>
       httr2::req_timeout(30)
@@ -235,19 +243,27 @@ pubmed_efetch <- function(pmids, email = NULL, api_key = NULL,
       ck <- cache_key("pm_efetch_v1", sort(batch))
       interval <- if (has_key) 0.14 else (.rate_state$pubmed_interval %||% 0.45)
       .respect_rate_limit(interval)
+      eff_email <- if (!is.null(email) && nzchar(email)) {
+        email
+      } else if (nzchar(Sys.getenv("NCBI_EMAIL", ""))) {
+        Sys.getenv("NCBI_EMAIL")
+      } else {
+        getOption("revlitquery.ncbi_email", "")
+      }
       body <- list(
         db = "pubmed",
         id = paste(batch, collapse = ","),
         retmode = "xml",
-        tool = "r_query_optimizer"
+        tool = "revlitquery"
       )
-      if (!is.null(email) && nzchar(email)) body$email <- email
+      if (!is.null(eff_email) && nzchar(eff_email)) body$email <- eff_email
       if (has_key) body$api_key <- api_key
 
       batch_tbl <- tryCatch({
         on.exit(.mark_request_done(), add = TRUE)
         t_start <- proc.time()[["elapsed"]]
         req <- httr2::request("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi") |>
+          httr2::req_user_agent("revlitquery (https://github.com/PascalCrepey/revlitquery)") |>
           httr2::req_body_form(!!!body) |>
           httr2::req_retry(max_tries = 4, is_transient = .is_short_transient, max_seconds = 20, backoff = ~ 1.2 * (2 ^ .x)) |>
           httr2::req_timeout(45)
