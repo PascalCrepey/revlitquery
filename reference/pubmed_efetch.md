@@ -22,6 +22,22 @@ pubmed_efetch(
 
   Character vector of PMIDs.
 
+- email:
+
+  Optional email for NCBI tool identification.
+
+- api_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Directory for RDS cache.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
 ## Value
 
 Tibble with \`pmid\`, \`pm_title\`, \`pm_abstract\`, \`pm_mesh\`,

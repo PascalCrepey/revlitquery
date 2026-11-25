@@ -352,12 +352,6 @@ UI state.
 - [`discover_exclusion_hints()`](https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.md)
   : Discover concept-grouped candidate exclusion (NOT / -) terms from
   non-seed PubMed results
-- [`.is_code_family()`](https://pascalcrepey.github.io/revlitquery/reference/dot-is_code_family.md)
-  : Check whether two terms share an alphanumeric subtype/code prefix
-  (e.g. h5n1 and h5)
-- [`.term_subsumes()`](https://pascalcrepey.github.io/revlitquery/reference/dot-term_subsumes.md)
-  : Check whether term \`t_broad\` lexically subsumes \`t_narrow\`
-  inside an OR block
 - [`enrich_seeds()`](https://pascalcrepey.github.io/revlitquery/reference/enrich_seeds.md)
   : Enrich BibTeX seed papers via PubMed
 - [`escape_regex()`](https://pascalcrepey.github.io/revlitquery/reference/escape_regex.md)

@@ -42,6 +42,26 @@ extract_candidate_terms(
 
   Optional function \`(term) -\> integer\` for testing without network.
 
+- email:
+
+  Optional email for NCBI polite pool.
+
+- ncbi_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Cache directory path.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
+- progress_cb:
+
+  Optional progress callback function.
+
 ## Value
 
 Tibble of scored candidate terms with \`cov_tiab\` and \`cov_title\`

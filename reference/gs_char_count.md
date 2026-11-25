@@ -7,3 +7,13 @@ Count characters in translated Google Scholar query
 ``` r
 gs_char_count(q)
 ```
+
+## Arguments
+
+- q:
+
+  Canonical \`search_query\` object.
+
+## Value
+
+Integer character count.

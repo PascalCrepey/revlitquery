@@ -8,3 +8,13 @@ h5n1)
 ``` r
 normalize_search_text(x)
 ```
+
+## Arguments
+
+- x:
+
+  Character vector of texts.
+
+## Value
+
+Normalized lowercase alphanumeric text vector.

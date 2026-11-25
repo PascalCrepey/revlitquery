@@ -37,6 +37,27 @@ evaluate_custom_query(
   Optional Google Scholar query string (auto-approximated if
   NULL/blank).
 
+- email:
+
+  Optional email for NCBI polite pool.
+
+- ncbi_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Cache directory path.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
+- eval_pubmed_fn:
+
+  Function \`(pm_query, seed_pmids, ...)\` returning \`pm_hits\`,
+  \`pm_found\`, \`pm_recall\`, \`ok\`.
+
 ## Value
 
 1-row tibble matching \`eval_df\` schema.

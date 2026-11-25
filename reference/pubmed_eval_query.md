@@ -27,6 +27,22 @@ pubmed_eval_query(
 
   Character vector of seed PMIDs.
 
+- email:
+
+  Optional email for NCBI tool identification.
+
+- api_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Directory for RDS cache.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
 ## Value
 
 List with \`pm_hits\`, \`pm_found\`, \`pm_recall\`, \`ok\`.

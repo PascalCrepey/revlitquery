@@ -8,3 +8,13 @@ break E-utilities)
 ``` r
 clean_title_for_query(title)
 ```
+
+## Arguments
+
+- title:
+
+  Input article title string.
+
+## Value
+
+Cleaned title string.

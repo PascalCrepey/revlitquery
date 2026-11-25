@@ -16,6 +16,36 @@ build_config_from_inputs(
 )
 ```
 
+## Arguments
+
+- required_txt:
+
+  Comma/newline-separated required terms string.
+
+- banned_txt:
+
+  Comma/newline-separated banned terms string.
+
+- exclude_txt:
+
+  Comma/newline-separated exclusion terms string.
+
+- custom_blocks_yaml:
+
+  Optional YAML text defining custom concept blocks.
+
+- max_blocks:
+
+  Maximum number of concept blocks.
+
+- max_terms_per_block:
+
+  Maximum number of terms per concept block.
+
+- max_gs_chars:
+
+  Maximum Google Scholar query character limit.
+
 ## Value
 
 List with \`ok\`, \`config\`, and \`error\`.

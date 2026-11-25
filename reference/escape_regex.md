@@ -7,3 +7,13 @@ Escape regex metacharacters in literal term
 ``` r
 escape_regex(x)
 ```
+
+## Arguments
+
+- x:
+
+  Character string to escape.
+
+## Value
+
+Regex-escaped character string.

@@ -7,3 +7,13 @@ Simple token stemmer for lexical overlap detection across concept blocks
 ``` r
 term_stems(term)
 ```
+
+## Arguments
+
+- term:
+
+  Candidate term string.
+
+## Value
+
+Character vector of stemmed tokens.

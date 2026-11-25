@@ -64,10 +64,38 @@ optimize_queries(
 
   Logical; whether to mine non-seed PubMed results for exclusion hints.
 
+- email:
+
+  Optional email for NCBI polite pool.
+
+- ncbi_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Cache directory path.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
 - eval_pubmed_fn:
 
   Function \`(pm_query, seed_pmids, ...)\` returning \`pm_hits\`,
   \`pm_found\`, \`pm_recall\`, \`ok\`.
+
+- pm_esearch_fn:
+
+  Optional dependency injection for \[pubmed_esearch()\].
+
+- pm_efetch_fn:
+
+  Optional dependency injection for \[pubmed_efetch()\].
+
+- progress_cb:
+
+  Optional progress callback function.
 
 ## Value
 

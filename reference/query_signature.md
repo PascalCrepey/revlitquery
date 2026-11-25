@@ -7,3 +7,13 @@ Deterministic canonical signature for deduplicating queries
 ``` r
 query_signature(q)
 ```
+
+## Arguments
+
+- q:
+
+  Canonical \`search_query\` object.
+
+## Value
+
+Character scalar signature.

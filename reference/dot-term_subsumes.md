@@ -8,3 +8,17 @@ OR block
 ``` r
 .term_subsumes(t_broad, t_narrow)
 ```
+
+## Arguments
+
+- t_broad:
+
+  Broader candidate term.
+
+- t_narrow:
+
+  Narrower candidate term.
+
+## Value
+
+Logical scalar.

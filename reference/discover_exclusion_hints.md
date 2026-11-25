@@ -53,6 +53,34 @@ discover_exclusion_hints(
 
   Maximum number of exclusion hints to return and display (default 35).
 
+- email:
+
+  Optional email for NCBI polite pool.
+
+- ncbi_key:
+
+  Optional NCBI API key.
+
+- cache_dir:
+
+  Cache directory path.
+
+- use_cache:
+
+  Logical; whether to read/write cache.
+
+- pm_esearch_fn:
+
+  Optional dependency injection for \[pubmed_esearch()\].
+
+- pm_efetch_fn:
+
+  Optional dependency injection for \[pubmed_efetch()\].
+
+- progress_cb:
+
+  Optional progress callback function.
+
 ## Value
 
 Tibble of ranked exclusion hints with \`concept\` column and
