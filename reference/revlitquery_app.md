@@ -22,3 +22,9 @@ revlitquery_app(initial_result = NULL, initial_bib_label = NULL)
 ## Value
 
 A \`shiny.appobj\` object that can be passed to \[shiny::runApp()\].
+
+## Examples
+
+``` r
+app <- revlitquery_app()
+```

@@ -65,6 +65,14 @@ implicit spaces, and formats `NOT (...)` exclusions as `-term`.</p>
     <p>Approximate Google Scholar query string.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">pubmed_to_google_scholar_approx</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">'(("H5N1"[tiab] OR "H5"[tiab]) AND "fatal*"[tiab]) NOT "H7N9"[tiab]'</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(H5N1 OR H5) fatal -H7N9"</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

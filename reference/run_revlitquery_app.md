@@ -36,3 +36,11 @@ run_revlitquery_app(
 ## Value
 
 Invisibly returns the result of \[shiny::runApp()\].
+
+## Examples
+
+``` r
+if (interactive()) {
+  run_revlitquery_app()
+}
+```

@@ -17,3 +17,10 @@ clean_latex_text(x)
 ## Value
 
 Cleaned character vector.
+
+## Examples
+
+``` r
+clean_latex_text("Human {H5N1} avian \\emph{influenza} infections")
+#> [1] "Human H5N1 avian influenza infections"
+```

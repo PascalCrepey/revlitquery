@@ -82,3 +82,19 @@ optimize_search_queries(
 ## Value
 
 Optimization result list (invisibly).
+
+## Examples
+
+``` r
+if (interactive()) {
+  demo_bib <- tempfile(fileext = ".bib")
+  writeLines(c(
+    "@article{li2008,",
+    "  title = {Case fatality rate of human H5N1 avian influenza},",
+    "  year = {2008},",
+    "  pmid = {18439345}",
+    "}"
+  ), demo_bib)
+  res <- optimize_search_queries(demo_bib, output_dir = tempdir(), max_evals = 10)
+}
+```

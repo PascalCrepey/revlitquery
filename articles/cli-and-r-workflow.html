@@ -276,7 +276,7 @@ small synthetic BibTeX corpus:</p>
 <span><span class="co"># 1. Write and parse a 6-article demo BibTeX file</span></span>
 <span><span class="va">demo_bib</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"demo_seeds.bib"</span><span class="op">)</span></span>
 <span><span class="fu">revlitquery</span><span class="fu">:::</span><span class="fu"><a href="../reference/dot-write_demo_bibtex.html">.write_demo_bibtex</a></span><span class="op">(</span><span class="va">demo_bib</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpPDMTLG/demo_seeds.bib"</span></span>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp1bXtUR/demo_seeds.bib"</span></span>
 <span></span>
 <span><span class="va">seeds_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_bibtex.html">parse_bibtex</a></span><span class="op">(</span><span class="va">demo_bib</span><span class="op">)</span></span>
 <span><span class="va">seeds_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"citekey"</span>, <span class="st">"year"</span>, <span class="st">"pmid"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span></span>
