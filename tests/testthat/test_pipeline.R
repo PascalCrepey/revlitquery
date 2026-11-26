@@ -1174,3 +1174,14 @@ test_that("Unsupervised Hybrid Contrastive Graph + Set-Cover works across any sc
   all_eco_terms <- unlist(lapply(eco_blocks, `[[`, "terms"))
   expect_true(any(grepl("pollinat|fragment", all_eco_terms)))
 })
+
+test_that("extract_candidate_terms tolerates seeds without MeSH/keyword columns without warnings", {
+  seeds <- tibble::tibble(
+    seed_id = 1:6, citekey = paste0("s", 1:6), year = "2020", doi = "",
+    pmid = as.character(1:6), in_pubmed = TRUE,
+    full_title = paste("Pollinator decline in fragmented landscapes", 1:6),
+    full_abstract = "", full_text = paste("Pollinator decline in fragmented landscapes", 1:6)
+  )
+  expect_no_warning(terms <- extract_candidate_terms(seeds, probe_pubmed = FALSE))
+  expect_no_warning(build_concept_blocks(terms, seeds))
+})

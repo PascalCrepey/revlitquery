@@ -207,6 +207,12 @@ shares_stem <- function(t1, t2) {
   unique(grams)
 }
 
+# Safely fetch element `i` of an optional list-column (returns character(0) if the column is absent)
+.seed_list_col <- function(df, col, i) {
+  if (!(col %in% names(df))) return(character(0))
+  as.character(df[[col]][[i]] %||% character(0))
+}
+
 # Detect uppercase acronyms in original un-lowercased text
 .detect_acronyms <- function(raw_texts) {
   matches <- stringr::str_extract_all(paste(raw_texts, collapse = " "), "\\b[A-Z][A-Z0-9]{1,9}\\b")
@@ -438,8 +444,8 @@ extract_candidate_terms <- function(seeds_df,
   doc_grams <- lapply(norm_texts, .extract_doc_ngrams, max_n = 3L, stops = stops)
 
   extra_terms <- unique(c(
-    unlist(seeds_df$all_keywords %||% list()),
-    unlist(seeds_df$mesh_terms %||% list())
+    unlist(if ("all_keywords" %in% names(seeds_df)) seeds_df[["all_keywords"]] else list()),
+    unlist(if ("mesh_terms" %in% names(seeds_df)) seeds_df[["mesh_terms"]] else list())
   ))
   extra_terms <- normalize_search_text(extra_terms)
   extra_terms <- extra_terms[nzchar(extra_terms) & !(extra_terms %in% stops) & nchar(extra_terms) >= 2L]
@@ -451,7 +457,7 @@ extract_candidate_terms <- function(seeds_df,
   prefix_wildcards <- .synthesize_prefix_wildcards(doc_grams, raw_texts, min_df = min_df, stops = stops)
   per_seed_rescue <- unique(unlist(lapply(seq_len(k), function(i) {
     t_grams <- .extract_doc_ngrams(normalize_search_text(raw_titles[i]), max_n = 3L, stops = stops)
-    kw_i <- normalize_search_text(c(seeds_df$all_keywords[[i]] %||% character(0), seeds_df$mesh_terms[[i]] %||% character(0)))
+    kw_i <- normalize_search_text(c(.seed_list_col(seeds_df, "all_keywords", i), .seed_list_col(seeds_df, "mesh_terms", i)))
     kw_i <- kw_i[nzchar(kw_i) & !(kw_i %in% stops)]
     dg_i <- doc_grams[[i]]
     u_i <- dg_i[!grepl(" ", dg_i, fixed = TRUE) & nchar(dg_i) >= 4L & !.is_generic_academic_prefix(dg_i)]
@@ -685,8 +691,8 @@ extract_candidate_terms <- function(seeds_df,
         }
       }
       # Add bipartite MeSH descriptor & author keyword tags from matching documents
-      mh <- seeds_df$mesh_terms[[d]] %||% character(0)
-      kw <- seeds_df$all_keywords[[d]] %||% character(0)
+      mh <- .seed_list_col(seeds_df, "mesh_terms", d)
+      kw <- .seed_list_col(seeds_df, "all_keywords", d)
       if (length(mh) > 0L) feats <- c(feats, paste0("mesh:", mh))
       if (length(kw) > 0L) feats <- c(feats, paste0("kw:", kw))
     }
