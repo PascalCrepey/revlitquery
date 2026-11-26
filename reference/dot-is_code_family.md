@@ -1,7 +1,7 @@
-# Check whether two terms share an alphanumeric subtype/code prefix (e.g. h5n1 and h5)
+# Check whether two terms share an alphanumeric code prefix (e.g. brca1/brca, h5n1/h5)
 
-Check whether two terms share an alphanumeric subtype/code prefix (e.g.
-h5n1 and h5)
+Check whether two terms share an alphanumeric code prefix (e.g.
+brca1/brca, h5n1/h5)
 
 ## Usage
 

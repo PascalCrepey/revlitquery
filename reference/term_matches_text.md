@@ -13,7 +13,7 @@ term_matches_text(term, texts)
 
 - term:
 
-  Single candidate term.
+  Single candidate term (supports trailing \`\*\` prefix wildcard).
 
 - texts:
 

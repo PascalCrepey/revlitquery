@@ -157,16 +157,16 @@ exclude_terms:
   - vaccin*
   - title:ferret*
 
-# Optional manual concept blocks (leave empty/commented for automatic PICO discovery)
+# Optional manual concept blocks (leave empty/commented for automatic unsupervised concept discovery)
 # custom_blocks:
-#   pathogen:
+#   concept_1:
 #     - h5n1
 #     - h5
-#   outcome_severity:
+#   concept_2:
 #     - fatal*
 #     - mortality
 #     - death*
-#   population_host:
+#   concept_3:
 #     - cases
 #     - human*
 
@@ -224,7 +224,7 @@ library(revlitquery)
 # 1. Write and parse a 6-article demo BibTeX file
 demo_bib <- file.path(tempdir(), "demo_seeds.bib")
 revlitquery:::.write_demo_bibtex(demo_bib)
-#> [1] "/tmp/RtmpHBjtWX/demo_seeds.bib"
+#> [1] "/tmp/RtmpZRvXkW/demo_seeds.bib"
 
 seeds_df <- parse_bibtex(demo_bib)
 seeds_df[, c("citekey", "year", "pmid", "title")]
@@ -256,6 +256,18 @@ terms_df <- extract_candidate_terms(
 )
 #> Warning: Unknown or uninitialised column: `all_keywords`.
 #> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
 head(terms_df[, c("term", "n_words", "df_tiab", "df_title", "lift", "term_score")], 10)
 #> # A tibble: 10 × 6
 #>    term               n_words df_tiab df_title  lift term_score
@@ -274,31 +286,258 @@ head(terms_df[, c("term", "n_words", "df_tiab", "df_title", "lift", "term_score"
 
 ``` r
 
-# 4. Discover PICO / semantic concept blocks
+# 4. Discover unsupervised orthogonal concept blocks (Hybrid Contrastive Graph + Set-Cover)
 blocks <- build_concept_blocks(
   terms_df = terms_df,
   seeds_df = seeds_local,
   config   = list(max_blocks = 3, max_terms_per_block = 4)
 )
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
+#> Warning: Unknown or uninitialised column: `mesh_terms`.
+#> Warning: Unknown or uninitialised column: `all_keywords`.
 str(blocks)
 #> List of 3
 #>  $ :List of 2
 #>   ..$ name : chr "primary_topic"
 #>   ..$ terms: chr [1:2] "avian influenza" "influenza"
 #>  $ :List of 2
-#>   ..$ name : chr "outcome_severity"
+#>   ..$ name : chr "concept_human_h5n1"
+#>   ..$ terms: chr [1:2] "human h5n1" "confirmed human"
+#>   ..- attr(*, "cluster_id")= chr "concept_human_h5n1"
+#>  $ :List of 2
+#>   ..$ name : chr "concept_case_fatality"
 #>   ..$ terms: chr [1:2] "case fatality" "fatality risk"
 #>   ..- attr(*, "narrow_term")= chr "case fatality rate"
-#>  $ :List of 2
-#>   ..$ name : chr "population_host"
-#>   ..$ terms: chr [1:2] "human" "confirmed human"
-#>   ..- attr(*, "narrow_term")= chr "confirmed human"
-#>  - attr(*, "block1_coupled")= chr [1:4] "avian influenza" "h5n1" "influenza" "avian"
+#>   ..- attr(*, "cluster_id")= chr "concept_case_fatality"
+#>  - attr(*, "block1_coupled")= chr [1:3] "avian influenza" "influenza" "avian"
 #>  - attr(*, "joint_hits")= Named num(0) 
 #>   ..- attr(*, "names")= chr(0) 
-#>  - attr(*, "term_families")= Named chr [1:45] "primary_topic" "primary_topic" "primary_topic" "outcome_severity" ...
-#>   ..- attr(*, "names")= chr [1:45] "avian influenza" "human h5n1" "h5n1" "case fatality" ...
-#>  - attr(*, "domain_qualifier")= chr "h5n1"
+#>  - attr(*, "term_clusters")= Named chr [1:50] "primary_topic" "concept_human_h5n1" "concept_human_h5n1" "concept_case_fatality" ...
+#>   ..- attr(*, "names")= chr [1:50] "avian influenza" "human h5n1" "h5n1" "case fatality" ...
+#>  - attr(*, "domain_qualifier")= chr(0)
 ```
 
 ``` r
@@ -308,7 +547,7 @@ q <- make_query(
   blocks = list(
     list(name = "primary_topic", terms = c("h5n1", "h5"), field = "tiab"),
     list(name = "domain_context", terms = "influenza", field = "tiab"),
-    list(name = "outcome_severity", terms = c("fatal*", "case fatality"), field = "tiab")
+    list(name = "concept_fatal", terms = c("fatal*", "case fatality"), field = "tiab")
   ),
   exclude_terms = c("h7n9", "h1n1*", "vaccin*")
 )
@@ -335,6 +574,6 @@ finishes, it writes a self-contained report bundle to `output_dir`:
 | `all_evaluated_queries.csv` | Complete log of all candidate and custom queries evaluated across Stage 1 (grid) and Stage 2 (local + exclusion refinement). |
 | `seed_resolution.csv` | Per-article PubMed resolution summary (`citekey`, `pmid`, `doi`, `in_pubmed`, abstract availability). |
 | `seed_coverage_matrix.csv` | Paper-by-query matrix showing `TRUE`/`FALSE` retrieval of every seed article across each Pareto query (`Q1`, `Q2`, …). |
-| `exclusion_hints.csv` | Up to 35 ranked `NOT` / `-` exclusion candidates (including prefix wildcards and `title:`-scoped terms) organized by exclusion concept (`competing_subtypes`, `experimental_lab`, `vaccines_immunology`, `veterinary_ecology`, `general_noise`) with verified PubMed hit reductions and seed loss counts. |
+| `exclusion_hints.csv` | Up to 35 ranked `NOT` / `-` exclusion candidates (including prefix wildcards and `title:`-scoped terms) organized into unsupervised noise topic clusters (`topic_*`) with verified PubMed hit reductions and seed loss counts. |
 | `report.md` | Formatted Markdown summary report ready to share with co-authors or include in a systematic review appendix. |
 | `pareto_frontier.png` | Publication-ready plot of the sensitivity (seed recall %) vs. specificity (total PubMed hits, log scale) Pareto frontier. |

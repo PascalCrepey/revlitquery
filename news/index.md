@@ -12,9 +12,11 @@
   per-PMID disk caching.
 - Added candidate term extraction
   ([`extract_candidate_terms()`](https://pascalcrepey.github.io/revlitquery/reference/extract_candidate_terms.md)),
-  morphological prefix wildcard synthesis (`*`), and PICO concept block
-  discovery
-  ([`build_concept_blocks()`](https://pascalcrepey.github.io/revlitquery/reference/build_concept_blocks.md)).
+  unsupervised morphological prefix wildcard synthesis (`*`), and
+  domain-agnostic Hybrid Contrastive Graph + Orthogonal Set-Cover
+  concept block discovery
+  ([`discover_term_clusters()`](https://pascalcrepey.github.io/revlitquery/reference/discover_term_clusters.md),
+  [`build_concept_blocks()`](https://pascalcrepey.github.io/revlitquery/reference/build_concept_blocks.md)).
 - Added canonical boolean query representation
   ([`make_query()`](https://pascalcrepey.github.io/revlitquery/reference/make_query.md))
   and translators for PubMed
@@ -25,8 +27,10 @@
 - Added two-stage sensitivity-specificity Pareto frontier optimizer
   ([`optimize_queries()`](https://pascalcrepey.github.io/revlitquery/reference/optimize_queries.md),
   [`optimize_search_queries()`](https://pascalcrepey.github.io/revlitquery/reference/optimize_search_queries.md))
-  with timeline-stratified, concept-grouped exclusion mining
-  ([`discover_exclusion_hints()`](https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.md)).
+  with timeline-stratified, unsupervised NPMI co-occurrence noise topic
+  clustering
+  ([`cluster_exclusion_terms()`](https://pascalcrepey.github.io/revlitquery/reference/cluster_exclusion_terms.md),
+  [`discover_exclusion_hints()`](https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.md)).
 - Added interactive Shiny dashboard
   ([`revlitquery_app()`](https://pascalcrepey.github.io/revlitquery/reference/revlitquery_app.md),
   [`run_revlitquery_app()`](https://pascalcrepey.github.io/revlitquery/reference/run_revlitquery_app.md))

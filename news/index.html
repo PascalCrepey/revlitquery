@@ -15,10 +15,11 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/shiny-interface.html">Get Started</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/workflow-explained.html">Get Started</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/workflow-explained.html">How revlitquery Works: The Workflow Step by Step</a></li>
+    <li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
     <li><a class="dropdown-item" href="../articles/cli-and-r-workflow.html">Command-Line (CLI) and Programmatic R Workflow</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -40,9 +41,9 @@
 <h2 class="pkg-version" data-toc-text="0.1.0" id="revlitquery-010">revlitquery 0.1.0<a class="anchor" aria-label="anchor" href="#revlitquery-010"></a></h2>
 <ul><li>Initial release of <code>revlitquery</code>: Reverse Literature Review Search Query Optimizer for PubMed and Google Scholar.</li>
 <li>Added BibTeX parser (<code><a href="../reference/parse_bibtex.html">parse_bibtex()</a></code>) and PubMed seed metadata enrichment (<code><a href="../reference/enrich_seeds.html">enrich_seeds()</a></code>) with year-assisted title matching, Author Keyword indexing, and per-PMID disk caching.</li>
-<li>Added candidate term extraction (<code><a href="../reference/extract_candidate_terms.html">extract_candidate_terms()</a></code>), morphological prefix wildcard synthesis (<code>*</code>), and PICO concept block discovery (<code><a href="../reference/build_concept_blocks.html">build_concept_blocks()</a></code>).</li>
+<li>Added candidate term extraction (<code><a href="../reference/extract_candidate_terms.html">extract_candidate_terms()</a></code>), unsupervised morphological prefix wildcard synthesis (<code>*</code>), and domain-agnostic Hybrid Contrastive Graph + Orthogonal Set-Cover concept block discovery (<code><a href="../reference/discover_term_clusters.html">discover_term_clusters()</a></code>, <code><a href="../reference/build_concept_blocks.html">build_concept_blocks()</a></code>).</li>
 <li>Added canonical boolean query representation (<code><a href="../reference/make_query.html">make_query()</a></code>) and translators for PubMed (<code><a href="../reference/to_pubmed_query.html">to_pubmed_query()</a></code>) and Google Scholar (<code>&lt;= 256</code> characters; <code><a href="../reference/to_google_scholar_query.html">to_google_scholar_query()</a></code>, <code><a href="../reference/pubmed_to_google_scholar_approx.html">pubmed_to_google_scholar_approx()</a></code>).</li>
-<li>Added two-stage sensitivity-specificity Pareto frontier optimizer (<code><a href="../reference/optimize_queries.html">optimize_queries()</a></code>, <code><a href="../reference/optimize_search_queries.html">optimize_search_queries()</a></code>) with timeline-stratified, concept-grouped exclusion mining (<code><a href="../reference/discover_exclusion_hints.html">discover_exclusion_hints()</a></code>).</li>
+<li>Added two-stage sensitivity-specificity Pareto frontier optimizer (<code><a href="../reference/optimize_queries.html">optimize_queries()</a></code>, <code><a href="../reference/optimize_search_queries.html">optimize_search_queries()</a></code>) with timeline-stratified, unsupervised NPMI co-occurrence noise topic clustering (<code><a href="../reference/cluster_exclusion_terms.html">cluster_exclusion_terms()</a></code>, <code><a href="../reference/discover_exclusion_hints.html">discover_exclusion_hints()</a></code>).</li>
 <li>Added interactive Shiny dashboard (<code><a href="../reference/revlitquery_app.html">revlitquery_app()</a></code>, <code><a href="../reference/run_revlitquery_app.html">run_revlitquery_app()</a></code>) and two package vignettes (<code>shiny-interface</code> and <code>cli-and-r-workflow</code>).</li>
 </ul></div>
   </main></div>

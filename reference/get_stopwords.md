@@ -1,6 +1,7 @@
-# Stopword list (standard English + academic/methods filler)
+# Stopword list (standard English + generic academic reporting boilerplate)
 
-Stopword list (standard English + academic/methods filler)
+Stopword list (standard English + generic academic reporting
+boilerplate)
 
 ## Usage
 

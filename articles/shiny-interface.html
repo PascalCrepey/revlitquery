@@ -28,11 +28,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/shiny-interface.html">Get Started</a></li>
-<li class="nav-item dropdown">
+<li class="nav-item"><a class="nav-link" href="../articles/workflow-explained.html">Get Started</a></li>
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-<li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
+<li><a class="dropdown-item" href="../articles/workflow-explained.html">How revlitquery Works: The Workflow Step by Step</a></li>
+    <li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
     <li><a class="dropdown-item" href="../articles/cli-and-r-workflow.html">Command-Line (CLI) and Programmatic R Workflow</a></li>
   </ul>
 </li>
@@ -89,11 +90,9 @@ queries</strong> alongside automatically discovered queries.</li>
 <strong>Inspect paper-by-paper coverage</strong> across all
 Pareto-optimal and custom queries.</li>
 <li>
-<strong>Review inclusion concept blocks and concept-grouped
-exclusion hints</strong> (<code>competing_subtypes</code>,
-<code>experimental_lab</code>, <code>vaccines_immunology</code>,
-<code>veterinary_ecology</code>, <code>general_noise</code>) with
-one-click addition to your query exclusions.</li>
+<strong>Review unsupervised inclusion concept blocks and noise-topic
+exclusion clusters</strong> with one-click addition to your query
+exclusions.</li>
 <li>
 <strong>Export a reproducible report bundle</strong>
 (<code>.zip</code>, <code>.csv</code>, and CLI <code>.yml</code>
@@ -287,12 +286,10 @@ internal vocabulary discovery stage:</p>
 <ul>
 <li>
 <strong>Active Inclusion Concept Blocks</strong>: Displays the
-automatically discovered PICO / domain concept blocks (e.g.,
-<code>primary_topic: h5n1 | h5</code>,
-<code>outcome_severity: fatal* | deadly</code>,
-<code>population_host: cases | human*</code>, and
-<code>domain_context: influenza</code>) as pill badges, with a button to
-copy them into the YAML editor for manual editing.</li>
+automatically discovered orthogonal concept blocks (discovered via
+distributional SVD context, MeSH/keyword co-assignment, and Louvain
+graph set-cover) as pill badges, with a button to copy them into the
+YAML editor for manual editing.</li>
 <li>
 <strong>Candidate Terms Ranked by Seed Lift</strong>: Lists every
 extracted unigram, bigram, trigram, and synthesized prefix wildcard
@@ -323,11 +320,11 @@ exclusions into scientific concepts:</p>
 <ul>
 <li>
 <strong>Exclusion Concept Blocks (Greedy Set-Cover, 0 Seeds
-Lost)</strong>: Summarizes the top zero-loss exclusion terms grouped by
-domain concept (<code>experimental_lab</code>,
-<code>competing_subtypes</code>, <code>vaccines_immunology</code>,
-<code>veterinary_ecology</code>, <code>general_noise</code>) and reports
-the percentage of sampled non-seed noise covered by each block.</li>
+Lost)</strong>: Summarizes the top zero-loss exclusion terms grouped
+into unsupervised noise topics (discovered via Normalized Pointwise
+Mutual Information co-occurrence clustering on sampled non-seed
+articles) and reports the percentage of sampled non-seed noise covered
+by each block.</li>
 <li>
 <strong>Quick-Add Action Buttons</strong>:
 <ul>

@@ -15,10 +15,11 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/shiny-interface.html">Get Started</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/workflow-explained.html">Get Started</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/workflow-explained.html">How revlitquery Works: The Workflow Step by Step</a></li>
+    <li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
     <li><a class="dropdown-item" href="../articles/cli-and-r-workflow.html">Command-Line (CLI) and Programmatic R Workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -140,7 +141,7 @@
       </dl></div><div class="section level2">
       <h2 id="candidate-term-extraction-concept-blocks">Candidate Term Extraction &amp; Concept Blocks<a class="anchor" aria-label="anchor" href="#candidate-term-extraction-concept-blocks"></a></h2>
 
-      <div class="section-desc"><p>Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies, and group terms into PICO concept blocks.</p></div>
+      <div class="section-desc"><p>Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies, and discover unsupervised concept blocks.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -156,24 +157,17 @@
 
         <dt>
 
+          <code><a href="discover_term_clusters.html">discover_term_clusters()</a></code>
+
+        </dt>
+        <dd>Unsupervised concept cluster discovery across candidate search terms</dd>
+
+        <dt>
+
           <code><a href="build_concept_blocks.html">build_concept_blocks()</a></code>
 
         </dt>
-        <dd>Build stem-disjoint, conditionally selective concept blocks from scored candidate terms</dd>
-
-        <dt>
-
-          <code><a href="assign_term_family.html">assign_term_family()</a></code>
-
-        </dt>
-        <dd>Classify a candidate search term into a coherent semantic PICO family</dd>
-
-        <dt>
-
-          <code><a href="assign_term_families.html">assign_term_families()</a></code>
-
-        </dt>
-        <dd>Vectorized wrapper for `assign_term_family()`</dd>
+        <dd>Build orthogonal, unsupervised concept blocks from scored candidate terms</dd>
 
         <dt>
 
@@ -201,7 +195,7 @@
           <code><a href="normalize_search_text.html">normalize_search_text()</a></code>
 
         </dt>
-        <dd>Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)</dd>
+        <dd>Normalize text for n-gram extraction (preserves alphanumeric tokens)</dd>
 
         <dt>
 
@@ -215,7 +209,7 @@
           <code><a href="get_stopwords.html">get_stopwords()</a></code>
 
         </dt>
-        <dd>Stopword list (standard English + academic/methods filler)</dd>
+        <dd>Stopword list (standard English + generic academic reporting boilerplate)</dd>
       </dl></div><div class="section level2">
       <h2 id="query-construction-translation-pubmed-google-scholar-">Query Construction &amp; Translation (PubMed &amp; Google Scholar)<a class="anchor" aria-label="anchor" href="#query-construction-translation-pubmed-google-scholar-"></a></h2>
 
@@ -291,7 +285,7 @@
       </dl></div><div class="section level2">
       <h2 id="pareto-frontier-optimization-exclusion-mining">Pareto Frontier Optimization &amp; Exclusion Mining<a class="anchor" aria-label="anchor" href="#pareto-frontier-optimization-exclusion-mining"></a></h2>
 
-      <div class="section-desc"><p>Two-stage Pareto frontier search, timeline-stratified exclusion concept discovery, and custom query benchmarking.</p></div>
+      <div class="section-desc"><p>Two-stage Pareto frontier search, unsupervised noise topic exclusion discovery, and custom query benchmarking.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -310,14 +304,14 @@
           <code><a href="discover_exclusion_hints.html">discover_exclusion_hints()</a></code>
 
         </dt>
-        <dd>Discover concept-grouped candidate exclusion (NOT / -) terms from non-seed PubMed results</dd>
+        <dd>Discover unsupervised, concept-clustered exclusion (`NOT` / `-`) terms from non-seed PubMed results</dd>
 
         <dt>
 
-          <code><a href="assign_exclusion_concept.html">assign_exclusion_concept()</a></code>
+          <code><a href="cluster_exclusion_terms.html">cluster_exclusion_terms()</a></code>
 
         </dt>
-        <dd>Classify a candidate exclusion term into a scientific exclusion concept</dd>
+        <dd>Unsupervised co-occurrence graph clustering of candidate exclusion terms</dd>
 
         <dt>
 
@@ -488,27 +482,6 @@
 
         <dt>
 
-          <code><a href="assign_exclusion_concept.html">assign_exclusion_concept()</a></code>
-
-        </dt>
-        <dd>Classify a candidate exclusion term into a scientific exclusion concept</dd>
-
-        <dt>
-
-          <code><a href="assign_term_families.html">assign_term_families()</a></code>
-
-        </dt>
-        <dd>Vectorized wrapper for `assign_term_family()`</dd>
-
-        <dt>
-
-          <code><a href="assign_term_family.html">assign_term_family()</a></code>
-
-        </dt>
-        <dd>Classify a candidate search term into a coherent semantic PICO family</dd>
-
-        <dt>
-
           <code><a href="blocks_to_yaml.html">blocks_to_yaml()</a></code>
 
         </dt>
@@ -519,7 +492,7 @@
           <code><a href="build_concept_blocks.html">build_concept_blocks()</a></code>
 
         </dt>
-        <dd>Build stem-disjoint, conditionally selective concept blocks from scored candidate terms</dd>
+        <dd>Build orthogonal, unsupervised concept blocks from scored candidate terms</dd>
 
         <dt>
 
@@ -579,6 +552,13 @@
 
         <dt>
 
+          <code><a href="cluster_exclusion_terms.html">cluster_exclusion_terms()</a></code>
+
+        </dt>
+        <dd>Unsupervised co-occurrence graph clustering of candidate exclusion terms</dd>
+
+        <dt>
+
           <code><a href="compute_pareto_frontier.html">compute_pareto_frontier()</a></code>
 
         </dt>
@@ -589,7 +569,14 @@
           <code><a href="discover_exclusion_hints.html">discover_exclusion_hints()</a></code>
 
         </dt>
-        <dd>Discover concept-grouped candidate exclusion (NOT / -) terms from non-seed PubMed results</dd>
+        <dd>Discover unsupervised, concept-clustered exclusion (`NOT` / `-`) terms from non-seed PubMed results</dd>
+
+        <dt>
+
+          <code><a href="discover_term_clusters.html">discover_term_clusters()</a></code>
+
+        </dt>
+        <dd>Unsupervised concept cluster discovery across candidate search terms</dd>
 
         <dt>
 
@@ -645,7 +632,7 @@
           <code><a href="get_stopwords.html">get_stopwords()</a></code>
 
         </dt>
-        <dd>Stopword list (standard English + academic/methods filler)</dd>
+        <dd>Stopword list (standard English + generic academic reporting boilerplate)</dd>
 
         <dt>
 
@@ -687,7 +674,7 @@
           <code><a href="normalize_search_text.html">normalize_search_text()</a></code>
 
         </dt>
-        <dd>Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)</dd>
+        <dd>Normalize text for n-gram extraction (preserves alphanumeric tokens)</dd>
 
         <dt>
 

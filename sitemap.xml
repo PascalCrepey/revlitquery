@@ -5,13 +5,11 @@
 <url><loc>https://pascalcrepey.github.io/revlitquery/articles/cli-and-r-workflow.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/articles/index.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/articles/shiny-interface.html</loc></url>
+<url><loc>https://pascalcrepey.github.io/revlitquery/articles/workflow-explained.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/authors.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/index.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/news/index.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/add_custom_query_to_result.html</loc></url>
-<url><loc>https://pascalcrepey.github.io/revlitquery/reference/assign_exclusion_concept.html</loc></url>
-<url><loc>https://pascalcrepey.github.io/revlitquery/reference/assign_term_families.html</loc></url>
-<url><loc>https://pascalcrepey.github.io/revlitquery/reference/assign_term_family.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/blocks_to_yaml.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/build_concept_blocks.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/build_config_from_inputs.html</loc></url>
@@ -22,8 +20,10 @@
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/cache_set.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/clean_latex_text.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/clean_title_for_query.html</loc></url>
+<url><loc>https://pascalcrepey.github.io/revlitquery/reference/cluster_exclusion_terms.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/compute_pareto_frontier.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.html</loc></url>
+<url><loc>https://pascalcrepey.github.io/revlitquery/reference/discover_term_clusters.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/dot-is_code_family.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/dot-term_subsumes.html</loc></url>
 <url><loc>https://pascalcrepey.github.io/revlitquery/reference/dot-write_demo_bibtex.html</loc></url>

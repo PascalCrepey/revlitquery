@@ -1,11 +1,12 @@
-# Discover concept-grouped candidate exclusion (NOT / -) terms from non-seed PubMed results
+# Discover unsupervised, concept-clustered exclusion (\`NOT\` / \`-\`) terms from non-seed PubMed results
 
 Samples articles returned by \`base_query\` that are NOT in \`seeds_df\`
 across the full publication timeline, mines frequent 1- and 2-grams plus
 morphological prefix wildcards (\`\*\`), checks seed loss locally
-against PubMed-resolved seeds (including PubMed Author Keywords), groups
-exclusions by concept, builds greedy set-cover exclusion blocks, and
-returns up to \`max_hints\` ranked exclusion hints.
+against PubMed-resolved seeds (including PubMed Author Keywords),
+partitions candidates into unsupervised noise topic clusters via
+\[cluster_exclusion_terms()\], builds greedy set-cover exclusion blocks,
+and returns up to \`max_hints\` ranked exclusion hints.
 
 ## Usage
 

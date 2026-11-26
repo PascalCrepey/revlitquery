@@ -28,11 +28,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/shiny-interface.html">Get Started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/workflow-explained.html">Get Started</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-<li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
+<li><a class="dropdown-item" href="../articles/workflow-explained.html">How revlitquery Works: The Workflow Step by Step</a></li>
+    <li><a class="dropdown-item" href="../articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
     <li><a class="dropdown-item" href="../articles/cli-and-r-workflow.html">Command-Line (CLI) and Programmatic R Workflow</a></li>
   </ul>
 </li>
@@ -212,16 +213,16 @@ concept blocks, and benchmark queries in a YAML file and pass
 <span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> vaccin*</span></span>
 <span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> title:ferret*</span></span>
 <span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a></span>
-<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co"># Optional manual concept blocks (leave empty/commented for automatic PICO discovery)</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co"># Optional manual concept blocks (leave empty/commented for automatic unsupervised concept discovery)</span></span>
 <span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co"># custom_blocks:</span></span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#   pathogen:</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#   concept_1:</span></span>
 <span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#     - h5n1</span></span>
 <span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#     - h5</span></span>
-<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#   outcome_severity:</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#   concept_2:</span></span>
 <span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#     - fatal*</span></span>
 <span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#     - mortality</span></span>
 <span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#     - death*</span></span>
-<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#   population_host:</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#   concept_3:</span></span>
 <span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#     - cases</span></span>
 <span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="co">#     - human*</span></span>
 <span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a></span>
@@ -276,7 +277,7 @@ small synthetic BibTeX corpus:</p>
 <span><span class="co"># 1. Write and parse a 6-article demo BibTeX file</span></span>
 <span><span class="va">demo_bib</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"demo_seeds.bib"</span><span class="op">)</span></span>
 <span><span class="fu">revlitquery</span><span class="fu">:::</span><span class="fu"><a href="../reference/dot-write_demo_bibtex.html">.write_demo_bibtex</a></span><span class="op">(</span><span class="va">demo_bib</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpHBjtWX/demo_seeds.bib"</span></span>
+<span><span class="co">#&gt; [1] "/tmp/RtmpZRvXkW/demo_seeds.bib"</span></span>
 <span></span>
 <span><span class="va">seeds_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_bibtex.html">parse_bibtex</a></span><span class="op">(</span><span class="va">demo_bib</span><span class="op">)</span></span>
 <span><span class="va">seeds_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"citekey"</span>, <span class="st">"year"</span>, <span class="st">"pmid"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span></span>
@@ -305,6 +306,18 @@ small synthetic BibTeX corpus:</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
 <span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">terms_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"term"</span>, <span class="st">"n_words"</span>, <span class="st">"df_tiab"</span>, <span class="st">"df_title"</span>, <span class="st">"lift"</span>, <span class="st">"term_score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 6</span></span></span>
 <span><span class="co">#&gt;    term               n_words df_tiab df_title  lift term_score</span></span>
@@ -320,38 +333,265 @@ small synthetic BibTeX corpus:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> avian                    1       5        5  158.       2.47</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> case                     1       5        3  158.       2.22</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 4. Discover PICO / semantic concept blocks</span></span>
+<code class="sourceCode R"><span><span class="co"># 4. Discover unsupervised orthogonal concept blocks (Hybrid Contrastive Graph + Set-Cover)</span></span>
 <span><span class="va">blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_concept_blocks.html">build_concept_blocks</a></span><span class="op">(</span></span>
 <span>  terms_df <span class="op">=</span> <span class="va">terms_df</span>,</span>
 <span>  seeds_df <span class="op">=</span> <span class="va">seeds_local</span>,</span>
 <span>  config   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_blocks <span class="op">=</span> <span class="fl">3</span>, max_terms_per_block <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `mesh_terms`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `all_keywords`.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">blocks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 3</span></span>
 <span><span class="co">#&gt;  $ :List of 2</span></span>
 <span><span class="co">#&gt;   ..$ name : chr "primary_topic"</span></span>
 <span><span class="co">#&gt;   ..$ terms: chr [1:2] "avian influenza" "influenza"</span></span>
 <span><span class="co">#&gt;  $ :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ name : chr "outcome_severity"</span></span>
+<span><span class="co">#&gt;   ..$ name : chr "concept_human_h5n1"</span></span>
+<span><span class="co">#&gt;   ..$ terms: chr [1:2] "human h5n1" "confirmed human"</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "cluster_id")= chr "concept_human_h5n1"</span></span>
+<span><span class="co">#&gt;  $ :List of 2</span></span>
+<span><span class="co">#&gt;   ..$ name : chr "concept_case_fatality"</span></span>
 <span><span class="co">#&gt;   ..$ terms: chr [1:2] "case fatality" "fatality risk"</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "narrow_term")= chr "case fatality rate"</span></span>
-<span><span class="co">#&gt;  $ :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ name : chr "population_host"</span></span>
-<span><span class="co">#&gt;   ..$ terms: chr [1:2] "human" "confirmed human"</span></span>
-<span><span class="co">#&gt;   ..- attr(*, "narrow_term")= chr "confirmed human"</span></span>
-<span><span class="co">#&gt;  - attr(*, "block1_coupled")= chr [1:4] "avian influenza" "h5n1" "influenza" "avian"</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "cluster_id")= chr "concept_case_fatality"</span></span>
+<span><span class="co">#&gt;  - attr(*, "block1_coupled")= chr [1:3] "avian influenza" "influenza" "avian"</span></span>
 <span><span class="co">#&gt;  - attr(*, "joint_hits")= Named num(0) </span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr(0) </span></span>
-<span><span class="co">#&gt;  - attr(*, "term_families")= Named chr [1:45] "primary_topic" "primary_topic" "primary_topic" "outcome_severity" ...</span></span>
-<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:45] "avian influenza" "human h5n1" "h5n1" "case fatality" ...</span></span>
-<span><span class="co">#&gt;  - attr(*, "domain_qualifier")= chr "h5n1"</span></span></code></pre></div>
+<span><span class="co">#&gt;  - attr(*, "term_clusters")= Named chr [1:50] "primary_topic" "concept_human_h5n1" "concept_human_h5n1" "concept_case_fatality" ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:50] "avian influenza" "human h5n1" "h5n1" "case fatality" ...</span></span>
+<span><span class="co">#&gt;  - attr(*, "domain_qualifier")= chr(0)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 5. Translate a structured query specification into PubMed &amp; Google Scholar syntax</span></span>
 <span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_query.html">make_query</a></span><span class="op">(</span></span>
 <span>  blocks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"primary_topic"</span>, terms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h5n1"</span>, <span class="st">"h5"</span><span class="op">)</span>, field <span class="op">=</span> <span class="st">"tiab"</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"domain_context"</span>, terms <span class="op">=</span> <span class="st">"influenza"</span>, field <span class="op">=</span> <span class="st">"tiab"</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"outcome_severity"</span>, terms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fatal*"</span>, <span class="st">"case fatality"</span><span class="op">)</span>, field <span class="op">=</span> <span class="st">"tiab"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"concept_fatal"</span>, terms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fatal*"</span>, <span class="st">"case fatality"</span><span class="op">)</span>, field <span class="op">=</span> <span class="st">"tiab"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  exclude_terms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h7n9"</span>, <span class="st">"h1n1*"</span>, <span class="st">"vaccin*"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -407,10 +647,9 @@ retrieval of every seed article across each Pareto query
 <td><code>exclusion_hints.csv</code></td>
 <td>Up to 35 ranked <code>NOT</code> / <code>-</code> exclusion
 candidates (including prefix wildcards and <code>title:</code>-scoped
-terms) organized by exclusion concept (<code>competing_subtypes</code>,
-<code>experimental_lab</code>, <code>vaccines_immunology</code>,
-<code>veterinary_ecology</code>, <code>general_noise</code>) with
-verified PubMed hit reductions and seed loss counts.</td>
+terms) organized into unsupervised noise topic clusters
+(<code>topic_*</code>) with verified PubMed hit reductions and seed loss
+counts.</td>
 </tr>
 <tr class="even">
 <td><code>report.md</code></td>

@@ -1,7 +1,6 @@
-# Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)
+# Normalize text for n-gram extraction (preserves alphanumeric tokens)
 
-Normalize text for n-gram extraction (preserves alphanumeric tokens like
-h5n1)
+Normalize text for n-gram extraction (preserves alphanumeric tokens)
 
 ## Usage
 

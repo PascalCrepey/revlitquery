@@ -17,10 +17,9 @@ search query optimizer. The dashboard allows you to:
     alongside automatically discovered queries.
 5.  **Inspect paper-by-paper coverage** across all Pareto-optimal and
     custom queries.
-6.  **Review inclusion concept blocks and concept-grouped exclusion
-    hints** (`competing_subtypes`, `experimental_lab`,
-    `vaccines_immunology`, `veterinary_ecology`, `general_noise`) with
-    one-click addition to your query exclusions.
+6.  **Review unsupervised inclusion concept blocks and noise-topic
+    exclusion clusters** with one-click addition to your query
+    exclusions.
 7.  **Export a reproducible report bundle** (`.zip`, `.csv`, and CLI
     `.yml` config).
 
@@ -175,10 +174,9 @@ The **Terms & Concept Blocks** tab exposes the internal vocabulary
 discovery stage:
 
 - **Active Inclusion Concept Blocks**: Displays the automatically
-  discovered PICO / domain concept blocks (e.g.,
-  `primary_topic: h5n1 | h5`, `outcome_severity: fatal* | deadly`,
-  `population_host: cases | human*`, and `domain_context: influenza`) as
-  pill badges, with a button to copy them into the YAML editor for
+  discovered orthogonal concept blocks (discovered via distributional
+  SVD context, MeSH/keyword co-assignment, and Louvain graph set-cover)
+  as pill badges, with a button to copy them into the YAML editor for
   manual editing.
 - **Candidate Terms Ranked by Seed Lift**: Lists every extracted
   unigram, bigram, trigram, and synthesized prefix wildcard (`*`) along
@@ -206,10 +204,10 @@ retrieved by your query, synthesizes prefix wildcards (`*`) and
 PubMed, and organizes candidate exclusions into scientific concepts:
 
 - **Exclusion Concept Blocks (Greedy Set-Cover, 0 Seeds Lost)**:
-  Summarizes the top zero-loss exclusion terms grouped by domain concept
-  (`experimental_lab`, `competing_subtypes`, `vaccines_immunology`,
-  `veterinary_ecology`, `general_noise`) and reports the percentage of
-  sampled non-seed noise covered by each block.
+  Summarizes the top zero-loss exclusion terms grouped into unsupervised
+  noise topics (discovered via Normalized Pointwise Mutual Information
+  co-occurrence clustering on sampled non-seed articles) and reports the
+  percentage of sampled non-seed noise covered by each block.
 - **Quick-Add Action Buttons**:
   - **Add selected rows to sidebar**: Appends any rows you highlight in
     the table to the sidebar’s `Exclude terms (NOT / -)` box.

@@ -1,7 +1,15 @@
-# Build stem-disjoint, conditionally selective concept blocks from scored candidate terms
+# Build orthogonal, unsupervised concept blocks from scored candidate terms
 
-Build stem-disjoint, conditionally selective concept blocks from scored
-candidate terms
+Discovers Boolean \`AND\` concept blocks and their \`OR\` synonyms
+directly from the seed papers and PubMed co-occurrence statistics
+without hardcoded word lists or domain-specific ontologies: 1.
+Identifies the primary high-lift anchor concept (\`primary_topic\`) and
+expands stem/code synonyms covering remaining seeds. 2. Separates any
+universal domain-coupled context term (\`domain_context\`). 3.
+Partitions remaining selective terms via \[discover_term_clusters()\]
+(SVD local context + MeSH/keyword co-assignment + coverage
+complementarity Louvain graph) and grows each concept block via greedy
+minimum-hit seed set-cover.
 
 ## Usage
 
@@ -21,7 +29,7 @@ build_concept_blocks(
 
 - terms_df:
 
-  Scored candidate tibble from \`extract_candidate_terms()\`.
+  Scored candidate tibble from \[extract_candidate_terms()\].
 
 - seeds_df:
 

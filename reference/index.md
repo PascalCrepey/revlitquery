@@ -42,18 +42,15 @@ E-utilities.
 ## Candidate Term Extraction & Concept Blocks
 
 Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies,
-and group terms into PICO concept blocks.
+and discover unsupervised concept blocks.
 
 - [`extract_candidate_terms()`](https://pascalcrepey.github.io/revlitquery/reference/extract_candidate_terms.md)
   : Extract and score candidate search terms from enriched seed papers
+- [`discover_term_clusters()`](https://pascalcrepey.github.io/revlitquery/reference/discover_term_clusters.md)
+  : Unsupervised concept cluster discovery across candidate search terms
 - [`build_concept_blocks()`](https://pascalcrepey.github.io/revlitquery/reference/build_concept_blocks.md)
-  : Build stem-disjoint, conditionally selective concept blocks from
-  scored candidate terms
-- [`assign_term_family()`](https://pascalcrepey.github.io/revlitquery/reference/assign_term_family.md)
-  : Classify a candidate search term into a coherent semantic PICO
-  family
-- [`assign_term_families()`](https://pascalcrepey.github.io/revlitquery/reference/assign_term_families.md)
-  : Vectorized wrapper for \`assign_term_family()\`
+  : Build orthogonal, unsupervised concept blocks from scored candidate
+  terms
 - [`term_matches_text()`](https://pascalcrepey.github.io/revlitquery/reference/term_matches_text.md)
   : Check whether a candidate term matches each text in \`texts\`
   (case-insensitive, hyphen-flexible)
@@ -63,12 +60,12 @@ and group terms into PICO concept blocks.
 - [`shares_stem()`](https://pascalcrepey.github.io/revlitquery/reference/shares_stem.md)
   : Check whether two terms share any significant token stem
 - [`normalize_search_text()`](https://pascalcrepey.github.io/revlitquery/reference/normalize_search_text.md)
-  : Normalize text for n-gram extraction (preserves alphanumeric tokens
-  like h5n1)
+  : Normalize text for n-gram extraction (preserves alphanumeric tokens)
 - [`escape_regex()`](https://pascalcrepey.github.io/revlitquery/reference/escape_regex.md)
   : Escape regex metacharacters in literal term
 - [`get_stopwords()`](https://pascalcrepey.github.io/revlitquery/reference/get_stopwords.md)
-  : Stopword list (standard English + academic/methods filler)
+  : Stopword list (standard English + generic academic reporting
+  boilerplate)
 
 ## Query Construction & Translation (PubMed & Google Scholar)
 
@@ -97,17 +94,17 @@ Google Scholar (\<= 256 chars).
 
 ## Pareto Frontier Optimization & Exclusion Mining
 
-Two-stage Pareto frontier search, timeline-stratified exclusion concept
+Two-stage Pareto frontier search, unsupervised noise topic exclusion
 discovery, and custom query benchmarking.
 
 - [`optimize_queries()`](https://pascalcrepey.github.io/revlitquery/reference/optimize_queries.md)
   : Run Stage 1 + Stage 2 Pareto query optimization
 - [`discover_exclusion_hints()`](https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.md)
-  : Discover concept-grouped candidate exclusion (NOT / -) terms from
-  non-seed PubMed results
-- [`assign_exclusion_concept()`](https://pascalcrepey.github.io/revlitquery/reference/assign_exclusion_concept.md)
-  : Classify a candidate exclusion term into a scientific exclusion
-  concept
+  : Discover unsupervised, concept-clustered exclusion (\`NOT\` / \`-\`)
+  terms from non-seed PubMed results
+- [`cluster_exclusion_terms()`](https://pascalcrepey.github.io/revlitquery/reference/cluster_exclusion_terms.md)
+  : Unsupervised co-occurrence graph clustering of candidate exclusion
+  terms
 - [`compute_pareto_frontier()`](https://pascalcrepey.github.io/revlitquery/reference/compute_pareto_frontier.md)
   : Compute non-dominated Pareto frontier indicator
 - [`generate_initial_candidates()`](https://pascalcrepey.github.io/revlitquery/reference/generate_initial_candidates.md)
@@ -170,19 +167,11 @@ UI state.
 - [`add_custom_query_to_result()`](https://pascalcrepey.github.io/revlitquery/reference/add_custom_query_to_result.md)
   : Merge an evaluated custom query into an existing or minimal
   optimization result
-- [`assign_exclusion_concept()`](https://pascalcrepey.github.io/revlitquery/reference/assign_exclusion_concept.md)
-  : Classify a candidate exclusion term into a scientific exclusion
-  concept
-- [`assign_term_families()`](https://pascalcrepey.github.io/revlitquery/reference/assign_term_families.md)
-  : Vectorized wrapper for \`assign_term_family()\`
-- [`assign_term_family()`](https://pascalcrepey.github.io/revlitquery/reference/assign_term_family.md)
-  : Classify a candidate search term into a coherent semantic PICO
-  family
 - [`blocks_to_yaml()`](https://pascalcrepey.github.io/revlitquery/reference/blocks_to_yaml.md)
   : Convert discovered concept blocks list into editable YAML text
 - [`build_concept_blocks()`](https://pascalcrepey.github.io/revlitquery/reference/build_concept_blocks.md)
-  : Build stem-disjoint, conditionally selective concept blocks from
-  scored candidate terms
+  : Build orthogonal, unsupervised concept blocks from scored candidate
+  terms
 - [`build_config_from_inputs()`](https://pascalcrepey.github.io/revlitquery/reference/build_config_from_inputs.md)
   : Validate and assemble optimizer config list from Shiny sidebar
   inputs
@@ -201,11 +190,16 @@ UI state.
 - [`clean_title_for_query()`](https://pascalcrepey.github.io/revlitquery/reference/clean_title_for_query.md)
   : Clean title string for search queries (strip quotes/brackets/colons
   that break E-utilities)
+- [`cluster_exclusion_terms()`](https://pascalcrepey.github.io/revlitquery/reference/cluster_exclusion_terms.md)
+  : Unsupervised co-occurrence graph clustering of candidate exclusion
+  terms
 - [`compute_pareto_frontier()`](https://pascalcrepey.github.io/revlitquery/reference/compute_pareto_frontier.md)
   : Compute non-dominated Pareto frontier indicator
 - [`discover_exclusion_hints()`](https://pascalcrepey.github.io/revlitquery/reference/discover_exclusion_hints.md)
-  : Discover concept-grouped candidate exclusion (NOT / -) terms from
-  non-seed PubMed results
+  : Discover unsupervised, concept-clustered exclusion (\`NOT\` / \`-\`)
+  terms from non-seed PubMed results
+- [`discover_term_clusters()`](https://pascalcrepey.github.io/revlitquery/reference/discover_term_clusters.md)
+  : Unsupervised concept cluster discovery across candidate search terms
 - [`enrich_seeds()`](https://pascalcrepey.github.io/revlitquery/reference/enrich_seeds.md)
   : Enrich BibTeX seed papers via PubMed
 - [`escape_regex()`](https://pascalcrepey.github.io/revlitquery/reference/escape_regex.md)
@@ -222,7 +216,8 @@ UI state.
 - [`generate_initial_candidates()`](https://pascalcrepey.github.io/revlitquery/reference/generate_initial_candidates.md)
   : Generate diverse initial Stage 1 query candidates
 - [`get_stopwords()`](https://pascalcrepey.github.io/revlitquery/reference/get_stopwords.md)
-  : Stopword list (standard English + academic/methods filler)
+  : Stopword list (standard English + generic academic reporting
+  boilerplate)
 - [`google_scholar_url()`](https://pascalcrepey.github.io/revlitquery/reference/google_scholar_url.md)
   : Clickable Google Scholar search URL
 - [`gs_char_count()`](https://pascalcrepey.github.io/revlitquery/reference/gs_char_count.md)
@@ -234,8 +229,7 @@ UI state.
 - [`normalize_doi()`](https://pascalcrepey.github.io/revlitquery/reference/normalize_doi.md)
   : Normalize a DOI string to lowercase bare identifier
 - [`normalize_search_text()`](https://pascalcrepey.github.io/revlitquery/reference/normalize_search_text.md)
-  : Normalize text for n-gram extraction (preserves alphanumeric tokens
-  like h5n1)
+  : Normalize text for n-gram extraction (preserves alphanumeric tokens)
 - [`optimize_queries()`](https://pascalcrepey.github.io/revlitquery/reference/optimize_queries.md)
   : Run Stage 1 + Stage 2 Pareto query optimization
 - [`optimize_search_queries()`](https://pascalcrepey.github.io/revlitquery/reference/optimize_search_queries.md)

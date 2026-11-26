@@ -33,11 +33,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/shiny-interface.html">Get Started</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/workflow-explained.html">Get Started</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-<li><a class="dropdown-item" href="articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
+<li><a class="dropdown-item" href="articles/workflow-explained.html">How revlitquery Works: The Workflow Step by Step</a></li>
+    <li><a class="dropdown-item" href="articles/shiny-interface.html">Interactive Shiny Interface Guide</a></li>
     <li><a class="dropdown-item" href="articles/cli-and-r-workflow.html">Command-Line (CLI) and Programmatic R Workflow</a></li>
   </ul>
 </li>
@@ -68,9 +69,9 @@
 <li>
 <strong>PubMed (NCBI E-utilities)</strong>: live total hit counts, single-request seed PMID retrieval checks, year-assisted title resolution, and per-PMID disk caching.</li>
 <li>
-<strong>Google Scholar</strong>: exact semantic translation adhering to Google Scholar syntax (<code>intitle:</code>, implicit <code>AND</code>, uppercase <code>OR</code>, <code>-exclude</code>, <code>&lt;= 256</code> characters) with clickable verification links.</li>
+<strong>Google Scholar</strong>: exact semantic translation adhering to Google Scholar syntax (<code>intitle:</code>, implicit <code>AND</code>, uppercase <code>OR</code>, <code>-exclude</code>, <code>&lt;= 256</code> characters) with corpus-derived wildcard stem completion and clickable verification links.</li>
 <li>
-<strong>Concept-Grouped &amp; Wildcard Exclusion Mining</strong>: stratified timeline sampling of non-seed PubMed results to synthesize prefix wildcards (<code>vaccin*</code>, <code>cell*</code>, <code>mutat*</code>, <code>phylo*</code>, <code>reassort*</code>, <code>duck*</code>, <code>ferret*</code>), classify exclusions into scientific concepts (<code>competing_subtypes</code>, <code>experimental_lab</code>, <code>vaccines_immunology</code>, <code>veterinary_ecology</code>), and build greedy set-cover exclusion blocks with 0 seed loss.</li>
+<strong>Unsupervised Inclusion &amp; Exclusion Concept Discovery</strong>: domain-agnostic distributional context (<code>SVD</code>/<code>LSA</code> + MeSH/Keyword projection + seed complementarity) Louvain graph clustering with orthogonal set-cover for inclusion <code>AND</code>/<code>OR</code> blocks, paired with Normalized Pointwise Mutual Information (<code>NPMI</code>) co-occurrence topic clustering on non-seed PubMed results for zero-loss <code>NOT</code> / <code>-</code> exclusion blocks across <strong>any scientific discipline</strong>.</li>
 </ul>
 <hr>
 <div class="section level2">
