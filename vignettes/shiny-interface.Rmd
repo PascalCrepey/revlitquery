@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 3. **Explore the live Pareto frontier** comparing total PubMed hit volume (log scale) against seed recall (%).
 4. **Benchmark your own custom PubMed/Google Scholar queries** alongside automatically discovered queries.
 5. **Inspect paper-by-paper coverage** across all Pareto-optimal and custom queries.
-6. **Review inclusion concept blocks and concept-grouped exclusion hints** (`competing_subtypes`, `experimental_lab`, `vaccines_immunology`, `veterinary_ecology`, `general_noise`) with one-click addition to your query exclusions.
+6. **Review unsupervised inclusion concept blocks and noise-topic exclusion clusters** with one-click addition to your query exclusions.
 7. **Export a reproducible report bundle** (`.zip`, `.csv`, and CLI `.yml` config).
 
 ---
@@ -116,7 +116,7 @@ knitr::include_graphics("figures/shiny_03_seed_coverage.png")
 
 The **Terms & Concept Blocks** tab exposes the internal vocabulary discovery stage:
 
-- **Active Inclusion Concept Blocks**: Displays the automatically discovered PICO / domain concept blocks (e.g., `primary_topic: h5n1 | h5`, `outcome_severity: fatal* | deadly`, `population_host: cases | human*`, and `domain_context: influenza`) as pill badges, with a button to copy them into the YAML editor for manual editing.
+- **Active Inclusion Concept Blocks**: Displays the automatically discovered orthogonal concept blocks (discovered via distributional SVD context, MeSH/keyword co-assignment, and Louvain graph set-cover) as pill badges, with a button to copy them into the YAML editor for manual editing.
 - **Candidate Terms Ranked by Seed Lift**: Lists every extracted unigram, bigram, trigram, and synthesized prefix wildcard (`*`) along with its seed document frequency in Title/Abstract (`Seed DF (TiAb)`), Title document frequency (`Seed DF (Title)`), live PubMed background hit count (`PubMed BG Hits`), specificity lift (`Lift`), and composite score (`Score`).
 
 ```{r, echo = FALSE, fig.cap = "Figure 4: The Terms & Concept Blocks tab showing active inclusion concept blocks and candidate terms ranked by seed lift over PubMed background frequency."}
@@ -129,7 +129,7 @@ knitr::include_graphics("figures/shiny_04_concept_blocks.png")
 
 When a query retrieves too many irrelevant PubMed hits, `revlitquery` performs timeline-stratified sampling of non-seed PubMed articles retrieved by your query, synthesizes prefix wildcards (`*`) and `title:`-scoped exclusions, verifies exact hit reductions against PubMed, and organizes candidate exclusions into scientific concepts:
 
-- **Exclusion Concept Blocks (Greedy Set-Cover, 0 Seeds Lost)**: Summarizes the top zero-loss exclusion terms grouped by domain concept (`experimental_lab`, `competing_subtypes`, `vaccines_immunology`, `veterinary_ecology`, `general_noise`) and reports the percentage of sampled non-seed noise covered by each block.
+- **Exclusion Concept Blocks (Greedy Set-Cover, 0 Seeds Lost)**: Summarizes the top zero-loss exclusion terms grouped into unsupervised noise topics (discovered via Normalized Pointwise Mutual Information co-occurrence clustering on sampled non-seed articles) and reports the percentage of sampled non-seed noise covered by each block.
 - **Quick-Add Action Buttons**:
   - **Add selected rows to sidebar**: Appends any rows you highlight in the table to the sidebar's `Exclude terms (NOT / -)` box.
   - **Add top set-cover safe exclusions**: Appends the greedy set-cover exclusion set (maximizing orthogonal noise removal with `0` seed loss).

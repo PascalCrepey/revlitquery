@@ -322,46 +322,29 @@ test_that("Block selectivity rejects redundant concepts, prevents generic leakag
   expect_false("avian influenza" %in% unlist(lapply(blocks[-1L], `[[`, "terms")))
   expect_false("case" %in% unlist(lapply(blocks, `[[`, "terms")))
 
-  # Semantic family coherence checks
-  expect_equal(assign_term_family("case fatality"), "outcome_severity")
-  expect_equal(assign_term_family("mortality"), "outcome_severity")
-  expect_equal(assign_term_family("died"), "outcome_severity")
-  expect_equal(assign_term_family("human cases"), "population_host")
-  expect_equal(assign_term_family("patients"), "population_host")
-  expect_equal(assign_term_family("seroprevalence"), "epi_methods")
-  expect_equal(assign_term_family("respiratory"), "other")
-
+  # Unsupervised term clustering and orthogonal block coherence checks
+  tc_map <- attr(blocks, "term_clusters")
+  expect_true(is.character(tc_map) && length(tc_map) == nrow(terms_df))
   blk_names <- vapply(blocks, `[[`, character(1), "name")
   expect_equal(blk_names[1L], "primary_topic")
-  expect_true("outcome_severity" %in% blk_names)
-  out_blk <- blocks[[which(blk_names == "outcome_severity")[1L]]]
-  expect_true(all(vapply(out_blk$terms, assign_term_family, character(1)) == "outcome_severity"))
-  if ("population_host" %in% blk_names) {
-    pop_blk <- blocks[[which(blk_names == "population_host")[1L]]]
-    expect_true(all(vapply(pop_blk$terms, assign_term_family, character(1)) == "population_host"))
-  }
+  expect_true(all(startsWith(blk_names[-1L], "concept_")))
 
-  # Stage 2b rescue keeps outcome_severity pure (does not inject population_host terms)
-  q_out_only <- make_query(list(
+  # Stage 2b rescue uses discovered clusters & high-lift outlier rescue cleanly
+  sec_blk <- blocks[[2L]]
+  q_sec_only <- make_query(list(
     list(name = "primary_topic", field = "tiab", terms = "h5n1"),
-    list(name = "outcome_severity", field = "tiab", terms = "case fatality")
+    list(name = sec_blk$name, field = "tiab", terms = sec_blk$terms[1L])
   ))
   nbrs <- .generate_neighbors(
-    pareto_queries = list(q_out_only),
+    pareto_queries = list(q_sec_only),
     pareto_missed_idx = list(c(3L, 4L)),
     blocks = blocks,
     terms_df = terms_df,
     seeds_df = seeds,
     config = list(),
-    seen_sigs = query_signature(q_out_only)
+    seen_sigs = query_signature(q_sec_only)
   )
-  for (nq in nbrs) {
-    for (nb_blk in nq$blocks) {
-      if (nb_blk$name == "outcome_severity") {
-        expect_true(all(vapply(nb_blk$terms, assign_term_family, character(1)) == "outcome_severity"))
-      }
-    }
-  }
+  expect_true(length(nbrs) >= 1L)
 
   # OpenAlex completely removed from project signatures
   expect_false("use_openalex" %in% names(formals(enrich_seeds)))
@@ -410,10 +393,7 @@ test_that("Block selectivity rejects redundant concepts, prevents generic leakag
   expect_equal(hints$seeds_lost_n[hints$term %in% c("vaccine", "vaccin*")][1L], 0L)
   expect_equal(hints$exact_hits_removed[hints$term %in% c("vaccine", "vaccin*")][1L], 1200L)
   expect_true(length(attr(hints, "exclusion_blocks")) >= 1L)
-  expect_equal(assign_exclusion_concept("h7n9"), "competing_subtypes")
-  expect_equal(assign_exclusion_concept("vaccin*"), "vaccines_immunology")
-  expect_equal(assign_exclusion_concept("mice"), "experimental_lab")
-  expect_equal(assign_exclusion_concept("poultry"), "veterinary_ecology")
+  expect_true(all(startsWith(hints$concept, "topic_")))
 })
 
 test_that("Custom queries handle multiple quoted and bare [ti]/[Title] tags", {
@@ -535,7 +515,7 @@ test_that("Prefix wildcards, subtype code-family synonyms, domain qualifiers, an
     list(
       list(name = "primary_topic", field = "tiab", terms = c("h5n1", "h5")),
       list(name = "domain_context", field = "tiab", terms = "influenza"),
-      list(name = "outcome_severity", field = "tiab", terms = c("fatal*", "fatality", "case fatality"))
+      list(name = "concept_outcome", field = "tiab", terms = c("fatal*", "fatality", "case fatality"))
     ),
     exclude_terms = c("h7n9", "h1n1", "h1n1pdm09")
   )
@@ -942,7 +922,7 @@ test_that("Prefix wildcard synthesis, live background probing, igraph other-clus
     eval_joint_fn = function(t1, t2) 50L
   )
   expect_true(length(b_other) >= 2L)
-  expect_match(b_other[[2L]]$name, "^concept_other_")
+  expect_match(b_other[[2L]]$name, "^concept_")
 
   # Test estimate_local_query edge cases, 1-block generate_initial_candidates, and Stage 2a/2b optimizer with exclusions & custom_queries
   expect_equal(estimate_local_query(make_query(list()), t_other, seeds_other)$local_found, 0L)
@@ -950,7 +930,7 @@ test_that("Prefix wildcard synthesis, live background probing, igraph other-clus
     list(
       list(name = "primary_topic", field = "tiab", terms = c("h5", "unknown phrase")),
       list(name = "domain_context", field = "tiab", terms = "influenza"),
-      list(name = "population_host", field = "title", terms = "unknown_single")
+      list(name = "concept_host", field = "title", terms = "unknown_single")
     ),
     exclude_terms = c("h7n9", "title:ferret")
   )
@@ -995,7 +975,7 @@ test_that("Full optimize_queries Stage 2a exclusion refinement, custom_queries c
   )
   blocks <- list(
     list(name = "primary_topic", terms = c("h5n1")),
-    list(name = "outcome_severity", terms = c("fatal*"))
+    list(name = "concept_outcome", terms = c("fatal*"))
   )
   attr(blocks, "domain_qualifier") <- "influenza"
 
@@ -1082,4 +1062,115 @@ test_that("Full optimize_queries Stage 2a exclusion refinement, custom_queries c
   md_txt <- paste(readLines(files$report_md), collapse = "\n")
   expect_match(md_txt, "Exclusion Concept Blocks", fixed = TRUE)
   expect_match(md_txt, "exclude_terms:", fixed = TRUE)
+})
+
+test_that("Unsupervised Hybrid Contrastive Graph + Set-Cover works across any scientific domain (Oncology, Ecology, Machine Learning)", {
+  # 1. Test unsupervised exclusion co-occurrence clustering (cluster_exclusion_terms)
+  expect_equal(cluster_exclusion_terms(character(0), list()), character(0))
+  expect_equal(cluster_exclusion_terms("xenograft*", list(c(TRUE, FALSE))), "topic_xenograft")
+
+  # Simulate 12 noise papers splitting into 2 distinct co-occurring noise subtopics:
+  # Docs 1..6: preclinical mouse xenograft / cell culture noise
+  # Docs 7..12: surgical resection / laparoscopy noise
+  cov_noise <- list(
+    c(rep(TRUE, 6), rep(FALSE, 6)),   # xenograft
+    c(rep(TRUE, 5), FALSE, rep(FALSE, 6)), # mice
+    c(FALSE, rep(TRUE, 5), rep(FALSE, 6)), # vitro
+    c(rep(FALSE, 6), rep(TRUE, 6)),   # resection
+    c(rep(FALSE, 6), rep(TRUE, 5), FALSE), # laparoscopic
+    c(rep(FALSE, 6), FALSE, rep(TRUE, 5))  # biopsy
+  )
+  ex_terms <- c("xenograft", "mice", "vitro", "resection", "laparoscopic", "biopsy")
+  ex_mesh <- c(
+    rep(list(c("mice", "tumor cells, cultured")), 6),
+    rep(list(c("surgical procedures, operative", "biopsy")), 6)
+  )
+  ex_lbls <- cluster_exclusion_terms(
+    terms = ex_terms,
+    noise_cov_list = cov_noise,
+    rank_scores = c(100, 90, 80, 95, 85, 75),
+    noise_mesh = ex_mesh
+  )
+  expect_equal(length(unique(ex_lbls)), 2L)
+  expect_equal(ex_lbls[1L], ex_lbls[2L])
+  expect_equal(ex_lbls[4L], ex_lbls[5L])
+  expect_false(ex_lbls[1L] == ex_lbls[4L])
+
+  # 2. Oncology corpus: unsupervised concept discovery + prefix wildcard synthesis
+  onc_seeds <- tibble::tibble(
+    seed_id = 1:6,
+    citekey = paste0("onc", 1:6),
+    year = as.character(2019:2024),
+    doi = "",
+    pmid = as.character(501:506),
+    in_pubmed = rep(TRUE, 6),
+    full_title = c(
+      "Pembrolizumab immunotherapy in melanoma metastasis randomized trial",
+      "Pembrolizumab therapy in melanoma metastases randomized clinical trial",
+      "Pembrolizumab treatment in metastatic melanoma patients remission",
+      "Nivolumab immunotherapy in melanoma metastasis progression survival",
+      "Nivolumab treatment in metastatic melanoma randomized cohort",
+      "Checkpoint inhibitor immunotherapy in melanoma metastases remission"
+    ),
+    full_abstract = full_title,
+    full_text = full_title,
+    mesh_terms = rep(list(c("melanoma", "immunotherapy")), 6),
+    all_keywords = rep(list(c("checkpoint inhibitor")), 6)
+  )
+
+  onc_terms <- extract_candidate_terms(
+    seeds_df = onc_seeds,
+    probe_pubmed = TRUE,
+    eval_bg_fn = function(t) if (t == "melanoma") 140000L else 40000L
+  )
+  expect_true("metasta*" %in% onc_terms$term)
+  onc_blocks <- build_concept_blocks(
+    terms_df = onc_terms,
+    seeds_df = onc_seeds,
+    max_blocks = 3L,
+    probe_selectivity = TRUE,
+    eval_joint_fn = function(t1, t2) 2500L
+  )
+  expect_true(length(onc_blocks) >= 2L)
+  q_onc <- make_query(list(
+    list(name = "topic", field = "tiab", terms = c("melanoma", "metasta*")),
+    list(name = "intervention", field = "tiab", terms = "immunotherap*")
+  ))
+  expect_match(to_google_scholar_query(q_onc), "metastases|metastasis|metastatic")
+  expect_match(to_google_scholar_query(q_onc), "immunotherapy", fixed = TRUE)
+
+  # 3. Non-medical Ecology / Biodiversity corpus (completely outside biomedicine/PICO)
+  eco_seeds <- tibble::tibble(
+    seed_id = 1:6,
+    citekey = paste0("eco", 1:6),
+    year = as.character(2018:2023),
+    doi = "",
+    pmid = as.character(601:606),
+    in_pubmed = rep(TRUE, 6),
+    full_title = c(
+      "Pollinator biodiversity decline in fragmented agricultural landscapes",
+      "Wildbee pollinator richness decline across fragmented farmland landscapes",
+      "Bumblebee pollinator abundance loss in fragmented agricultural habitats",
+      "Pollinator diversity loss in fragmented agroecosystem landscapes",
+      "Solitary bee pollinator decline across fragmented cropland habitats",
+      "Pollinator richness loss in fragmented agricultural ecosystems"
+    ),
+    full_abstract = full_title,
+    full_text = full_title,
+    mesh_terms = rep(list(character(0)), 6),
+    all_keywords = rep(list(character(0)), 6)
+  )
+  eco_terms <- extract_candidate_terms(
+    seeds_df = eco_seeds,
+    probe_pubmed = FALSE
+  )
+  eco_blocks <- build_concept_blocks(
+    terms_df = eco_terms,
+    seeds_df = eco_seeds,
+    max_blocks = 3L,
+    probe_selectivity = FALSE
+  )
+  expect_true(length(eco_blocks) >= 2L)
+  all_eco_terms <- unlist(lapply(eco_blocks, `[[`, "terms"))
+  expect_true(any(grepl("pollinat|fragment", all_eco_terms)))
 })

@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_term_extraction.R
 \name{build_concept_blocks}
 \alias{build_concept_blocks}
-\title{Build stem-disjoint, conditionally selective concept blocks from scored candidate terms}
+\title{Build orthogonal, unsupervised concept blocks from scored candidate terms}
 \usage{
 build_concept_blocks(
   terms_df,
@@ -15,7 +15,7 @@ build_concept_blocks(
 )
 }
 \arguments{
-\item{terms_df}{Scored candidate tibble from `extract_candidate_terms()`.}
+\item{terms_df}{Scored candidate tibble from [extract_candidate_terms()].}
 
 \item{seeds_df}{Enriched seeds tibble.}
 
@@ -33,5 +33,13 @@ build_concept_blocks(
 List of block lists `list(name = ..., terms = ...)`.
 }
 \description{
-Build stem-disjoint, conditionally selective concept blocks from scored candidate terms
+Discovers Boolean `AND` concept blocks and their `OR` synonyms directly from
+the seed papers and PubMed co-occurrence statistics without hardcoded word lists
+or domain-specific ontologies:
+1. Identifies the primary high-lift anchor concept (`primary_topic`) and expands
+   stem/code synonyms covering remaining seeds.
+2. Separates any universal domain-coupled context term (`domain_context`).
+3. Partitions remaining selective terms via [discover_term_clusters()] (SVD local
+   context + MeSH/keyword co-assignment + coverage complementarity Louvain graph)
+   and grows each concept block via greedy minimum-hit seed set-cover.
 }

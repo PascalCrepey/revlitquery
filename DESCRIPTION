@@ -6,11 +6,13 @@ Authors@R: person("Pascal", "Crepey", email = "pascal.crepey@ehesp.fr", role = c
 Description: Discovers and optimizes semantically equivalent 'PubMed'
     <https://pubmed.ncbi.nlm.nih.gov/> and 'Google Scholar'
     <https://scholar.google.com/> (up to 256 characters) boolean search
-    queries from a seed corpus of 'BibTeX' references. Combines morphological
-    prefix wildcard synthesis, concept block discovery, timeline-stratified
-    exclusion concept mining, and live 'NCBI' E-utilities evaluation across the
-    sensitivity-specificity Pareto frontier. Includes an interactive 'Shiny'
-    dashboard and command-line workflow.
+    queries from a seed corpus of 'BibTeX' references across any scientific
+    domain. Combines unsupervised morphological prefix wildcard synthesis,
+    distributional context and co-occurrence graph clustering, orthogonal
+    set-cover concept block discovery, noise topic exclusion mining, and live
+    'NCBI' E-utilities evaluation across the sensitivity-specificity Pareto
+    frontier. Includes an interactive 'Shiny' dashboard and command-line
+    workflow.
 License: MIT + file LICENSE
 URL: https://github.com/PascalCrepey/revlitquery,
     https://pascalcrepey.github.io/revlitquery/

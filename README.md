@@ -11,8 +11,8 @@
 Given a `.bib` file of target/seed papers from a systematic or literature review, **`revlitquery`** reverse-engineers semantically equivalent **PubMed** and **Google Scholar** (`<= 256` characters) boolean search queries and optimizes their **sensitivity (seed recall)** vs. **specificity (total hit count)** Pareto frontier using NCBI E-utilities:
 
 - **PubMed (NCBI E-utilities)**: live total hit counts, single-request seed PMID retrieval checks, year-assisted title resolution, and per-PMID disk caching.
-- **Google Scholar**: exact semantic translation adhering to Google Scholar syntax (`intitle:`, implicit `AND`, uppercase `OR`, `-exclude`, `<= 256` characters) with clickable verification links.
-- **Concept-Grouped & Wildcard Exclusion Mining**: stratified timeline sampling of non-seed PubMed results to synthesize prefix wildcards (`vaccin*`, `cell*`, `mutat*`, `phylo*`, `reassort*`, `duck*`, `ferret*`), classify exclusions into scientific concepts (`competing_subtypes`, `experimental_lab`, `vaccines_immunology`, `veterinary_ecology`), and build greedy set-cover exclusion blocks with 0 seed loss.
+- **Google Scholar**: exact semantic translation adhering to Google Scholar syntax (`intitle:`, implicit `AND`, uppercase `OR`, `-exclude`, `<= 256` characters) with corpus-derived wildcard stem completion and clickable verification links.
+- **Unsupervised Inclusion & Exclusion Concept Discovery**: domain-agnostic distributional context (`SVD`/`LSA` + MeSH/Keyword projection + seed complementarity) Louvain graph clustering with orthogonal set-cover for inclusion `AND`/`OR` blocks, paired with Normalized Pointwise Mutual Information (`NPMI`) co-occurrence topic clustering on non-seed PubMed results for zero-loss `NOT` / `-` exclusion blocks across **any scientific discipline**.
 
 ---
 

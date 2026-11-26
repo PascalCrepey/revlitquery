@@ -54,12 +54,9 @@ estimate_local_query <- function(q, terms_df, seeds_df) {
       block_probs[bi] <- raw_prob
     } else if (identical(blk$name, "domain_context")) {
       block_probs[bi] <- 0.90
-    } else if (identical(blk$name, "population_host")) {
-      block_probs[bi] <- max(raw_prob, if (blk$field == "title") 0.18 else 0.45)
-    } else if (blk$name %in% c("outcome_severity", "outcome_or_epi")) {
-      block_probs[bi] <- min(max(raw_prob * 8.5, if (blk$field == "title") 0.012 else 0.035), 0.35)
     } else {
-      block_probs[bi] <- min(max(raw_prob * 6.0, 0.03), 0.40)
+      min_floor <- if (blk$field == "title") 0.012 else 0.03
+      block_probs[bi] <- min(max(raw_prob * 7.5, min_floor), 0.50)
     }
   }
 
@@ -430,17 +427,15 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
         }
       }
 
-      # 4. Rescue missed seeds: add 1 high-lift term from the SAME semantic family covering missed seeds
+      # 4. Rescue missed seeds: add 1 high-lift term from the SAME discovered concept cluster covering missed seeds
       if (length(missed) > 0L && length(blk$terms) < max_terms_blk) {
         other_terms <- unlist(lapply(q$blocks[-bi], `[[`, "terms"))
         b1_coupled <- attr(blocks, "block1_coupled") %||% character(0)
-        term_fams <- attr(blocks, "term_families") %||% assign_term_families(terms_df$term, b1_coupled)
-        blk_fam <- if (blk$name %in% c("primary_topic", "outcome_severity", "population_host", "epi_methods")) {
-          blk$name
-        } else if (identical(blk$name, "outcome_or_epi")) {
-          "outcome_severity"
+        term_clusters <- attr(blocks, "term_clusters") %||% discover_term_clusters(terms_df, seeds_df, exclude_terms = b1_coupled)
+        blk_cid <- if (bi == 1L || identical(blk$name, "primary_topic")) {
+          "primary_topic"
         } else {
-          unname(term_fams[blk$terms[1L]]) %||% "other"
+          unname(term_clusters[blk$terms[1L]]) %||% blk$name
         }
         cand_rows <- which(
           !(terms_df$term %in% blk$terms) &
@@ -449,13 +444,8 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
         )
         cand_rows <- Filter(function(r) {
           trm <- terms_df$term[r]
-          tf <- unname(term_fams[trm]) %||% assign_term_family(trm, b1_coupled)
-          if (blk_fam == "other") {
-            !(tf %in% c("primary_topic", "outcome_severity", "population_host", "epi_methods")) &&
-              !(trm %in% b1_coupled)
-          } else {
-            identical(tf, blk_fam) || any(vapply(blk$terms, shares_stem, logical(1), t2 = trm))
-          }
+          tc_id <- unname(term_clusters[trm]) %||% ""
+          identical(tc_id, blk_cid) || any(vapply(blk$terms, shares_stem, logical(1), t2 = trm))
         }, cand_rows)
         if (bi >= 2L && length(b1_coupled) > 0L) {
           cand_rows <- cand_rows[!(terms_df$term[cand_rows] %in% b1_coupled)]
@@ -483,9 +473,9 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
           }
         }
 
-        # 4b. If outcome block still misses seeds not covered by any outcome_severity term,
-        # allow 1 high-lift epi_methods term (e.g. "zoonotic") + optional remaining outcome rescue in "outcome_or_epi"
-        if (blk$name %in% c("outcome_severity", "outcome_or_epi")) {
+        # 4b. Cross-cluster outlier seed rescue: if a secondary block still misses outlier seeds
+        # not covered by any term in its own cluster, allow 1 high-lift low-BG term from any non-Block-1 cluster
+        if (bi >= 2L && !identical(blk$name, "domain_context")) {
           covered_by_same <- if (length(best_r) > 0L) {
             missed[Reduce(`|`, lapply(best_r, function(r) terms_df$cov_tiab[[r]][missed]))]
           } else {
@@ -493,31 +483,34 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
           }
           still_missed <- setdiff(missed, covered_by_same)
           if (length(still_missed) > 0L) {
-            epi_rows <- which(
+            cross_rows <- which(
               !(terms_df$term %in% blk$terms) &
                 !(terms_df$term %in% other_terms) &
                 !(terms_df$term %in% b1_coupled) &
-                unname(term_fams[terms_df$term]) == "epi_methods" &
-                terms_df$lift >= 25 &
-                terms_df$bg_hits <= 100000
+                terms_df$lift >= 6 &
+                terms_df$bg_hits <= 1500000
             )
-            if (length(epi_rows) > 0L) {
-              epi_gain <- vapply(epi_rows, function(r) {
+            if (length(other_terms) > 0L) {
+              cross_rows <- Filter(function(r) {
+                !any(vapply(other_terms, shares_stem, logical(1), t2 = terms_df$term[r]))
+              }, cross_rows)
+            }
+            if (length(cross_rows) > 0L) {
+              cross_gain <- vapply(cross_rows, function(r) {
                 cov_m <- sum(terms_df$cov_tiab[[r]][still_missed])
-                if (cov_m == 0L) return(-1)
+                if (cov_m == 0L) {
+                  return(-1)
+                }
                 cov_m * log10(pmax(terms_df$lift[r], 1.1)) / log10(terms_df$bg_hits[r] + 10)
               }, numeric(1))
-              best_epi <- epi_rows[order(epi_gain, decreasing = TRUE)]
-              best_epi <- best_epi[epi_gain[order(epi_gain, decreasing = TRUE)] > 0]
-              for (ri in utils::head(best_epi, 1L)) {
+              best_cross <- cross_rows[order(cross_gain, decreasing = TRUE)]
+              best_cross <- best_cross[cross_gain[order(cross_gain, decreasing = TRUE)] > 0]
+              for (ri in utils::head(best_cross, 1L)) {
                 new_blks_e <- q$blocks
-                new_blks_e[[bi]]$name <- "outcome_or_epi"
                 new_blks_e[[bi]]$terms <- c(blk$terms, terms_df$term[ri])
                 add_nbr(make_query(new_blks_e, q$exclude_terms))
-                # Also generate 2-step full rescue (epi term + best same-family outcome term) to reach 100% in 1 round
                 if (length(best_r) > 0L && (length(blk$terms) + 2L) <= max_terms_blk) {
                   new_blks_e2 <- q$blocks
-                  new_blks_e2[[bi]]$name <- "outcome_or_epi"
                   new_blks_e2[[bi]]$terms <- c(blk$terms, terms_df$term[ri], terms_df$term[best_r[1L]])
                   add_nbr(make_query(new_blks_e2, q$exclude_terms))
                 }
@@ -546,11 +539,18 @@ compute_pareto_frontier <- function(eval_df, max_hits = Inf) {
       }
     }
 
-    # 6. Extend exclusion set on high-recall queries using set-cover exclusions
+    # 6. Extend exclusion set on high-recall queries using set-cover exclusions (incremental + max GS-fitting pack)
     if (length(setcover_ex) > 0L) {
       add_ex <- setdiff(setcover_ex, q$exclude_terms)
       if (length(add_ex) >= 2L) {
-        add_nbr(make_query(q$blocks, unique(c(q$exclude_terms, utils::head(add_ex, 3L)))))
+        add_nbr(make_query(q$blocks, unique(c(q$exclude_terms, utils::head(add_ex, 4L)))))
+        for (k_pack in rev(seq_len(min(16L, length(add_ex))))) {
+          q_pack <- make_query(q$blocks, unique(c(q$exclude_terms, add_ex[seq_len(k_pack)])))
+          if (is_valid_gs_query(q_pack, max_gs_chars = max_gs_chars)) {
+            add_nbr(q_pack)
+            break
+          }
+        }
       }
     }
   }
@@ -715,7 +715,16 @@ optimize_queries <- function(seeds_df,
   if (isTRUE(discover_exclusions) && length(eval_records) < max_evals && exists("discover_exclusion_hints", mode = "function")) {
     s1_df <- to_eval_df(eval_records)
     hi_bound <- if (is.finite(max_hits)) max(max_hits * 3, 6000) else 8000
+    peak_bound <- if (is.finite(max_hits)) max(max_hits * 1.8, 1600) else 2500
     max_s1_rec <- max(s1_df$combined_recall, na.rm = TRUE)
+    s1_peak <- s1_df |>
+      dplyr::filter(
+        !is.na(.data$pm_hits) &
+          .data$pm_hits >= 80L &
+          .data$pm_hits <= peak_bound &
+          .data$combined_recall >= max(min_recall, max_s1_rec - 0.025)
+      ) |>
+      dplyr::arrange(dplyr::desc(.data$combined_recall), .data$pm_hits)
     s1_under_cap <- s1_df |>
       dplyr::filter(
         !is.na(.data$pm_hits) &
@@ -730,7 +739,9 @@ optimize_queries <- function(seeds_df,
     s1_noisy <- s1_df |>
       dplyr::filter(!is.na(.data$pm_hits) & .data$pm_hits >= 100L) |>
       dplyr::arrange(dplyr::desc(.data$combined_recall), .data$pm_hits)
-    base_row <- if (nrow(s1_under_cap) > 0L) {
+    base_row <- if (nrow(s1_peak) > 0L) {
+      s1_peak[1L, ]
+    } else if (nrow(s1_under_cap) > 0L) {
       s1_under_cap[1L, ]
     } else if (nrow(s1_focused) > 0L) {
       s1_focused[1L, ]
@@ -747,9 +758,9 @@ optimize_queries <- function(seeds_df,
           base_query = base_row$query_obj[[1L]],
           seeds_df = seeds_df,
           base_pm_hits = base_row$pm_hits,
-          sample_n = 160L,
-          top_verify = 12L,
-          max_hints = 35L,
+          sample_n = 200L,
+          top_verify = 18L,
+          max_hints = 40L,
           email = email,
           ncbi_key = ncbi_key,
           cache_dir = cache_dir,
@@ -788,7 +799,9 @@ optimize_queries <- function(seeds_df,
 
         excl_cands <- list()
         add_ex_cand <- function(bq, ex_vec) {
-          if (length(ex_vec) == 0L) return()
+          if (length(ex_vec) == 0L) {
+            return()
+          }
           q_new <- make_query(bq$blocks, unique(c(bq$exclude_terms, ex_vec)))
           if (is_valid_gs_query(q_new, max_gs_chars)) excl_cands[[length(excl_cands) + 1L]] <<- q_new
         }
@@ -808,9 +821,18 @@ optimize_queries <- function(seeds_df,
           if (length(excl_blocks) >= 2L) {
             add_ex_cand(bq, unique(c(excl_blocks[[1L]]$terms, excl_blocks[[2L]]$terms)))
           }
-          # 3. Progressive global greedy set-cover exclusion bundles
-          for (k_ex in c(2L, 4L, 7L, 10L)) {
-            if (length(setcover_ex) >= k_ex) {
+          # 3. Progressive global greedy set-cover exclusion bundles (up to max GS-fitting prefix)
+          k_fit <- 0L
+          if (length(setcover_ex) > 0L) {
+            for (kf in rev(seq_len(min(18L, length(setcover_ex))))) {
+              if (is_valid_gs_query(make_query(bq$blocks, unique(c(bq$exclude_terms, setcover_ex[seq_len(kf)]))), max_gs_chars)) {
+                k_fit <- kf
+                break
+              }
+            }
+          }
+          for (k_ex in unique(c(3L, 6L, 10L, 13L, k_fit))) {
+            if (k_ex >= 1L && k_ex <= k_fit) {
               add_ex_cand(bq, setcover_ex[seq_len(k_ex)])
             }
           }

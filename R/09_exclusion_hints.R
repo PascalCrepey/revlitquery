@@ -1,7 +1,7 @@
 # R/09_exclusion_hints.R
-# Mine non-seed PubMed hits ("noise" articles) to discover concept-organized,
-# wildcard-enabled exclusion terms (NOT / -) and greedy set-cover exclusion
-# blocks that reduce hit count while preserving seed recall.
+# Unsupervised exclusion concept discovery and wildcard mining on non-seed PubMed
+# articles ("noise" sample): NPMI + Jaccard + MeSH/keyword co-occurrence graph
+# community detection (`igraph::cluster_louvain()`) and greedy set-cover blocks.
 
 .empty_exclusion_hints <- function() {
   tbl <- tibble::tibble(
@@ -25,62 +25,224 @@
   tbl
 }
 
-#' Classify a candidate exclusion term into a scientific exclusion concept
+#' Unsupervised co-occurrence graph clustering of candidate exclusion terms
 #'
-#' @param term Single candidate exclusion term (may end with `*`).
-#' @return One of `"competing_subtypes"`, `"experimental_lab"`,
-#'   `"vaccines_immunology"`, `"veterinary_ecology"`, or `"general_noise"`.
+#' Partitions candidate exclusion terms into data-driven noise topic clusters
+#' based on their empirical co-occurrence across sampled non-seed articles
+#' (combining Normalized Pointwise Mutual Information, Jaccard overlap, shared
+#' MeSH/Author Keyword profiles, stem similarity, and alphanumeric code pattern
+#' affinity), using Louvain modularity maximization ([igraph::cluster_louvain()]).
+#'
+#' @param terms Character vector of candidate exclusion terms.
+#' @param noise_cov_list List of logical vectors (each of length `n_noise`) indicating
+#'   which sampled non-seed articles contain each candidate term.
+#' @param rank_scores Numeric vector of candidate importance scores (same length as `terms`).
+#' @param noise_mesh Optional list of character vectors of MeSH headings per noise article.
+#' @param noise_keywords Optional list of character vectors of author keywords per noise article.
+#' @return Character vector of automatically generated concept cluster labels
+#'   (same length as `terms`, e.g., `"topic_mice_receptor"`, `"topic_h1n1_h7n9"`).
 #' @export
-assign_exclusion_concept <- function(term) {
-  t_raw <- tolower(stringr::str_squish(as.character(term %||% "")))
-  if (!nzchar(t_raw)) return("general_noise")
-  t_low <- gsub("\\*", "", t_raw)
+cluster_exclusion_terms <- function(terms,
+                                    noise_cov_list,
+                                    rank_scores = NULL,
+                                    noise_mesh = NULL,
+                                    noise_keywords = NULL) {
+  m <- length(terms)
+  if (m == 0L) {
+    return(character(0))
+  }
+  if (is.null(rank_scores)) rank_scores <- rep(1, m)
+  if (m == 1L) {
+    slug <- gsub("^_+|_+$", "", gsub("[^a-z0-9]+", "_", gsub("\\*$", "", terms[1L])))
+    return(paste0("topic_", if (nzchar(slug)) substr(slug, 1L, 18L) else "1"))
+  }
 
-  # 1. Competing virus subtypes, strains, or other pathogens
-  if (grepl("^[a-z]+[0-9]+[a-z0-9]*$", t_low) ||
-      grepl("\\b(h[0-9]+n[0-9]+|pdm09|sars[a-z0-9]*|covid[a-z0-9]*|mers[a-z0-9]*|ndv|newcastle)\\b", t_low, perl = TRUE)) {
-    return("competing_subtypes")
+  n_noise <- length(noise_cov_list[[1L]])
+  if (n_noise == 0L) {
+    return(rep("topic_1", m))
   }
-  # 2. Vaccines, immunology & prophylaxis trials
-  if (grepl("\\b(vaccin[a-z]*|immun[a-z]*|antigen[a-z]*|antibod[a-z]*|adjuvant[a-z]*|neutraliz[a-z]*|prophylax[a-z]*|titer[a-z]*|titres|dose[a-z]*|challenge[a-z]*|protect[a-z]*|efficacy)\\b", t_low, perl = TRUE)) {
-    return("vaccines_immunology")
+
+  is_code <- grepl("^[a-z]+[0-9]+[a-z0-9]*$", gsub("\\*$", "", tolower(terms)))
+
+  # Build optional MeSH + Author Keyword cosine similarity across noise articles
+  meta_sim <- matrix(0, nrow = m, ncol = m)
+  has_meta <- (!is.null(noise_mesh) && length(noise_mesh) == n_noise) ||
+    (!is.null(noise_keywords) && length(noise_keywords) == n_noise)
+  if (has_meta) {
+    doc_tags <- lapply(seq_len(n_noise), function(d) {
+      mh <- if (!is.null(noise_mesh)) noise_mesh[[d]] %||% character(0) else character(0)
+      kw <- if (!is.null(noise_keywords)) noise_keywords[[d]] %||% character(0) else character(0)
+      unique(tolower(c(mh, kw)))
+    })
+    tag_tab <- table(unlist(doc_tags))
+    keep_tags <- names(tag_tab[tag_tab >= 2L])
+    if (length(keep_tags) > 0L) {
+      if (length(keep_tags) > 200L) keep_tags <- names(sort(tag_tab[keep_tags], decreasing = TRUE))[1:200]
+      M_mat <- matrix(0, nrow = m, ncol = length(keep_tags))
+      colnames(M_mat) <- keep_tags
+      for (i in seq_len(m)) {
+        hits <- which(noise_cov_list[[i]])
+        if (length(hits) > 0L) {
+          tb <- table(unlist(doc_tags[hits]))
+          cv <- intersect(names(tb), keep_tags)
+          if (length(cv) > 0L) M_mat[i, cv] <- as.numeric(tb[cv])
+        }
+      }
+      norms <- sqrt(rowSums(M_mat^2))
+      norms[norms < 1e-12] <- 1
+      M_norm <- M_mat / norms
+      meta_sim <- tcrossprod(M_norm)
+    }
   }
-  # 3. Cellular, molecular & experimental animal lab models
-  if (grepl("\\b(cell[a-z]*|mice|mouse|ferret[a-z]*|guinea|vitro|vivo|receptor[a-z]*|binding|gene|genes|express[a-z]*|cytokin[a-z]*|epithel[a-z]*|polymerase|pb2|pb1|haemagglutinin|hemagglutinin|neuraminidase|nucle[a-z]*|necro[a-z]*|interfer[a-z]*|mutat[a-z]*|amino|protein[a-z]*|replicat[a-z]*|assay[a-z]*|plasmid[a-z]*|recombin[a-z]*|crystal[a-z]*|structur[a-z]*|strain[a-z]*|isolat[a-z]*|pathogenicity|lethal[a-z]*|lungs|lung|brain|organs|tissue[a-z]*|systemic)\\b", t_low, perl = TRUE)) {
-    return("experimental_lab")
+
+  edge_from <- integer(0)
+  edge_to <- integer(0)
+  edge_w <- numeric(0)
+
+  for (i in seq_len(m - 1L)) {
+    ci <- noise_cov_list[[i]]
+    pi <- sum(ci) / n_noise
+    for (j in (i + 1L):m) {
+      cj <- noise_cov_list[[j]]
+      pj <- sum(cj) / n_noise
+      n_both <- sum(ci & cj)
+      n_union <- sum(ci | cj)
+      jacc <- if (n_union > 0L) n_both / n_union else 0
+
+      npmi <- 0
+      if (n_both > 0L && pi > 0 && pj > 0) {
+        pij <- n_both / n_noise
+        denom <- -log(max(pij, 1e-9))
+        if (denom > 1e-9) {
+          npmi <- max(0, log(pij / (pi * pj)) / denom)
+        }
+      }
+
+      stem_eq <- shares_stem(terms[i], terms[j]) || .is_code_family(terms[i], terms[j])
+      code_aff <- is_code[i] && is_code[j]
+
+      w <- 0.45 * npmi + 0.35 * jacc + 0.20 * meta_sim[i, j] +
+        (if (stem_eq) 0.35 else 0) + (if (code_aff) 0.28 else 0)
+
+      if (w >= 0.18) {
+        edge_from <- c(edge_from, i)
+        edge_to <- c(edge_to, j)
+        edge_w <- c(edge_w, w)
+      }
+    }
   }
-  # 4. Veterinary, wildlife, poultry, livestock & phylogenetic ecology
-  if (grepl("\\b(duck[a-z]*|mallard[a-z]*|chicken[a-z]*|poultry|bird[a-z]*|waterfowl|migratory|swan[a-z]*|geese|goose|flock[a-z]*|farm[a-z]*|cattle|bovin[a-z]*|dairy|milk|swine|pig|pigs|cat|cats|seal[a-z]*|mink[a-z]*|aiv|aivs|hpaiv[a-z]*|hpai|lpaiv[a-z]*|lpai|clade[a-z]*|lineage[a-z]*|phylo[a-z]*|phyloge[a-z]*|reassort[a-z]*|ecology|ecological|reservoir[a-z]*|wild)\\b", t_low, perl = TRUE)) {
-    return("veterinary_ecology")
+
+  g <- igraph::make_empty_graph(n = m, directed = FALSE)
+  node_str <- rep(0, m)
+  if (length(edge_w) > 0L) {
+    g <- igraph::add_edges(g, as.vector(rbind(edge_from, edge_to)), attr = list(weight = edge_w))
+    comm <- igraph::cluster_louvain(g, weights = igraph::E(g)$weight)
+    mem <- as.integer(igraph::membership(comm))
+    raw_str <- as.numeric(igraph::strength(g, weights = igraph::E(g)$weight))
+    if (max(raw_str) > 0) node_str <- raw_str / max(raw_str)
+  } else {
+    mem <- seq_len(m)
   }
-  "general_noise"
+
+  # Consolidate tiny isolated singleton clusters if > 5 clusters exist so UI stays concise
+  c_sizes <- table(mem)
+  c_max_score <- tapply(rank_scores, mem, max)
+  ord_c <- as.integer(names(sort(c_max_score, decreasing = TRUE)))
+  top_c <- utils::head(ord_c[c_sizes[as.character(ord_c)] >= 2L | seq_along(ord_c) <= 4L], 5L)
+
+  labels <- character(m)
+  used_lbls <- character(0)
+  for (cid in top_c) {
+    grp <- which(mem == cid)
+    grp_ord <- grp[order(rank_scores[grp], decreasing = TRUE)]
+    # Pick up to 2 stem-distinct representative words to build a descriptive topic slug
+    rep_words <- character(0)
+    rep_stems <- character(0)
+    for (gi in grp_ord) {
+      w_clean <- gsub("^_+|_+$", "", gsub("[^a-z0-9]+", "_", gsub("\\*$", "", tolower(terms[gi]))))
+      w_tok <- strsplit(w_clean, "_", fixed = TRUE)[[1L]][1L]
+      st <- term_stems(w_tok)
+      st_key <- if (length(st) > 0L) st[1L] else w_tok
+      if (nzchar(w_tok) && !(st_key %in% rep_stems)) {
+        rep_words <- c(rep_words, substr(w_tok, 1L, 12L))
+        rep_stems <- c(rep_stems, st_key)
+      }
+      if (length(rep_words) >= 2L) break
+    }
+    base_lbl <- paste0("topic_", if (length(rep_words) > 0L) paste(rep_words, collapse = "_") else cid)
+    lbl <- base_lbl
+    sfx <- 2L
+    while (lbl %in% used_lbls) {
+      lbl <- paste0(base_lbl, "_", sfx)
+      sfx <- sfx + 1L
+    }
+    used_lbls <- c(used_lbls, lbl)
+    labels[grp] <- lbl
+  }
+
+  leftover <- which(!nzchar(labels))
+  if (length(leftover) > 0L) {
+    labels[leftover] <- "topic_other"
+  }
+  attr(labels, "node_strength") <- node_str
+  labels
 }
 
-# Synthesize prefix wildcards (e.g. vaccin*, cell*, mutat*, phylo*, reassort*, receptor*, duck*, ferret*)
-# from noise unigrams when >= 2 noise words share a 5..8-char prefix and have 0 seed loss in tiab or title
+# Unsupervised prefix wildcard synthesis across sampled non-seed articles:
+# finds 5..8-char prefixes matching >= 2 distinct noise words with 0 seed loss in tiab or title
 .synthesize_exclusion_wildcards <- function(doc_grams, noise_texts, noise_titles,
                                             seed_texts, seed_titles, min_noise_cnt, stops) {
   all_u <- unique(unlist(doc_grams))
-  u <- all_u[grepl("^[a-z]{4,}$", all_u) & !(all_u %in% stops)]
-  if (length(u) < 2L) return(character(0))
-  # Restrict prefix wildcard synthesis to scientific exclusion concepts (avoid wildcarding generic English verbs/adverbs)
-  u_cpts <- vapply(u, assign_exclusion_concept, character(1))
-  u <- u[u_cpts != "general_noise"]
-  if (length(u) < 2L) return(character(0))
+  is_gen <- if (exists(".is_generic_academic_prefix", mode = "function")) {
+    .is_generic_academic_prefix(all_u)
+  } else {
+    rep(FALSE, length(all_u))
+  }
+  u <- all_u[grepl("^[a-z]{4,}$", all_u) & !(all_u %in% stops) & !is_gen]
+  if (length(u) < 2L) {
+    return(character(0))
+  }
 
   u_counts <- table(unlist(lapply(doc_grams, function(g) intersect(g, u))))
-  cand_prefixes <- unique(unlist(lapply(5:8, function(len) {
+  cand_prefixes <- unique(unlist(lapply(5:12, function(len) {
     long_u <- u[nchar(u) >= len]
     if (length(long_u) == 0L) character(0) else substr(long_u, 1L, len)
   })))
-  cand_prefixes <- cand_prefixes[!(cand_prefixes %in% stops)]
-  if (length(cand_prefixes) == 0L) return(character(0))
+  is_gen_p <- if (exists(".is_generic_academic_prefix", mode = "function")) {
+    .is_generic_academic_prefix(cand_prefixes)
+  } else {
+    rep(FALSE, length(cand_prefixes))
+  }
+  cand_prefixes <- cand_prefixes[!(cand_prefixes %in% stops) & !is_gen_p]
+  if (length(cand_prefixes) == 0L) {
+    return(character(0))
+  }
 
   matched_sets <- lapply(cand_prefixes, function(p) sort(u[startsWith(u, p)]))
-  keep_p <- vapply(matched_sets, length, integer(1)) >= 2L
+  keep_p <- vapply(seq_along(cand_prefixes), function(i) {
+    p <- cand_prefixes[i]
+    m_u <- matched_sets[[i]]
+    if (length(m_u) < 2L) {
+      return(FALSE)
+    }
+    sfx <- substring(m_u, nchar(p) + 1L)
+    if (min(nchar(sfx)) > 4L) {
+      return(FALSE)
+    }
+    if (nchar(p) == 5L) {
+      ends_classical <- substr(p, 5L, 5L) %in% c("o", "i") && min(nchar(sfx)) <= 3L
+      has_std_sfx <- any(sfx %in% c("", "e", "s", "ed", "al", "ar", "ic", "or", "er", "y", "ia", "is", "us", "um", "on"))
+      if (!ends_classical && !has_std_sfx) {
+        return(FALSE)
+      }
+    }
+    TRUE
+  }, logical(1))
   cand_prefixes <- cand_prefixes[keep_p]
   matched_sets <- matched_sets[keep_p]
-  if (length(cand_prefixes) == 0L) return(character(0))
+  if (length(cand_prefixes) == 0L) {
+    return(character(0))
+  }
 
   set_sigs <- vapply(matched_sets, paste, character(1), collapse = "|")
   ord_len <- order(nchar(cand_prefixes), decreasing = TRUE)
@@ -101,7 +263,6 @@ assign_exclusion_concept <- function(term) {
     max_single <- max(as.integer(u_counts[m_u]), na.rm = TRUE)
     w_term <- paste0(p, "*")
 
-    # Check if w_term is safe (0 seed loss) in tiab or title and removes noise
     loss_tiab <- sum(term_matches_text(w_term, seed_texts))
     loss_ti <- sum(term_matches_text(w_term, seed_titles))
     if (loss_tiab > 0L && loss_ti > 0L) next
@@ -110,9 +271,13 @@ assign_exclusion_concept <- function(term) {
     hits_ti <- sum(term_matches_text(w_term, noise_titles))
     eff_hits <- if (loss_tiab == 0L) hits_tiab else hits_ti
 
-    # Keep if it removes >= min_noise_cnt noise papers and unifies >= 2 forms cleanly
     if ((loss_tiab == 0L && hits_tiab >= min_noise_cnt && (hits_tiab > max_single || length(m_u) >= 3L)) ||
-        (loss_tiab > 0L && loss_ti == 0L && hits_ti >= max(3L, floor(min_noise_cnt * 0.75)))) {
+      (loss_tiab > 0L && loss_ti == 0L && hits_ti >= max(3L, floor(min_noise_cnt * 0.75)))) {
+      if (exists(".register_wildcard_expansion", mode = "function")) {
+        m_cnts <- as.integer(u_counts[m_u])
+        best_w <- m_u[order(-m_cnts, nchar(m_u))][1L]
+        .register_wildcard_expansion(p, best_w)
+      }
       root5 <- substr(p, 1L, 5L)
       ex_idx <- match(root5, kept_roots)
       if (is.na(ex_idx)) {
@@ -128,13 +293,14 @@ assign_exclusion_concept <- function(term) {
   kept
 }
 
-#' Discover concept-grouped candidate exclusion (NOT / -) terms from non-seed PubMed results
+#' Discover unsupervised, concept-clustered exclusion (`NOT` / `-`) terms from non-seed PubMed results
 #'
 #' Samples articles returned by `base_query` that are NOT in `seeds_df` across the full
 #' publication timeline, mines frequent 1- and 2-grams plus morphological prefix wildcards
 #' (`*`), checks seed loss locally against PubMed-resolved seeds (including PubMed Author
-#' Keywords), groups exclusions by concept, builds greedy set-cover exclusion blocks,
-#' and returns up to `max_hints` ranked exclusion hints.
+#' Keywords), partitions candidates into unsupervised noise topic clusters via
+#' [cluster_exclusion_terms()], builds greedy set-cover exclusion blocks, and returns up
+#' to `max_hints` ranked exclusion hints.
 #'
 #' @param base_query Canonical `search_query` object to analyze.
 #' @param seeds_df Enriched seeds tibble.
@@ -164,10 +330,14 @@ discover_exclusion_hints <- function(base_query,
                                      pm_esearch_fn = pubmed_esearch,
                                      pm_efetch_fn = pubmed_efetch,
                                      progress_cb = NULL) {
-  if (is.null(base_query) || length(base_query$blocks) == 0L) return(.empty_exclusion_hints())
+  if (is.null(base_query) || length(base_query$blocks) == 0L) {
+    return(.empty_exclusion_hints())
+  }
 
   pm_base <- to_pubmed_query(base_query)
-  if (!nzchar(pm_base)) return(.empty_exclusion_hints())
+  if (!nzchar(pm_base)) {
+    return(.empty_exclusion_hints())
+  }
 
   seed_pmids <- unique(as.character(seeds_df$pmid[nzchar(seeds_df$pmid)]))
   retmax <- min(max(as.integer(sample_n) * 4L + length(seed_pmids), 600L), 2500L)
@@ -177,13 +347,16 @@ discover_exclusion_hints <- function(base_query,
     term = pm_base, retmax = retmax,
     email = email, api_key = ncbi_key, cache_dir = cache_dir, use_cache = use_cache
   )
-  if (!isTRUE(res_ids$ok) || length(res_ids$idlist) == 0L) return(.empty_exclusion_hints())
+  if (!isTRUE(res_ids$ok) || length(res_ids$idlist) == 0L) {
+    return(.empty_exclusion_hints())
+  }
 
   if (is.na(base_pm_hits)) base_pm_hits <- as.integer(res_ids$count %||% length(res_ids$idlist))
   noise_all <- setdiff(res_ids$idlist, seed_pmids)
-  if (length(noise_all) < 5L) return(.empty_exclusion_hints())
+  if (length(noise_all) < 5L) {
+    return(.empty_exclusion_hints())
+  }
 
-  # Stratified sample across the entire returned ID list to cover all publication years
   if (length(noise_all) > as.integer(sample_n)) {
     strat_idx <- unique(round(seq(1, length(noise_all), length.out = as.integer(sample_n))))
     noise_pmids <- noise_all[strat_idx]
@@ -195,7 +368,9 @@ discover_exclusion_hints <- function(base_query,
     pmids = noise_pmids, email = email, api_key = ncbi_key,
     cache_dir = cache_dir, use_cache = use_cache
   )
-  if (is.null(noise_meta) || nrow(noise_meta) < 5L) return(.empty_exclusion_hints())
+  if (is.null(noise_meta) || nrow(noise_meta) < 5L) {
+    return(.empty_exclusion_hints())
+  }
 
   n_noise <- nrow(noise_meta)
   noise_titles <- as.character(noise_meta$pm_title %||% "")
@@ -210,12 +385,19 @@ discover_exclusion_hints <- function(base_query,
     "demonstrate", "demonstrated", "ability", "various", "long", "efficiently",
     "signs", "shown", "additional", "similar", "different", "recent", "previously",
     "present", "suggest", "suggested", "indicate", "indicated", "provide", "provided", "provides",
-    "subsequent", "subsequently", "exhibit", "exhibited", "exhibiting", "activate", "activated"
+    "subsequent", "subsequently", "exhibit", "exhibited", "exhibiting", "activate", "activated",
+    "derive", "derived", "attribute", "attributed", "attributable", "determine", "determined",
+    "represent", "represented", "confirm", "confirmed", "observe", "observed",
+    "broad", "broadly", "diverse", "diversity", "robust", "robustly", "single", "multiple",
+    "notable", "notably", "integrate", "integrated", "novel", "current", "common", "distinct",
+    "major", "minor", "rapid", "effective", "critical", "essential", "initial", "final",
+    "individual", "typical", "widely", "largely", "mostly", "strongly", "clearly", "directly",
+    "design", "designed", "scale", "scales", "knowledge", "context", "content", "combine",
+    "combined", "combining", "responsible", "responsibility", "function", "functional", "commercial"
   ))
   pos_terms <- unique(tolower(gsub("\\*", "", unlist(lapply(base_query$blocks, `[[`, "terms")))))
   pos_stems <- unique(unlist(lapply(pos_terms, term_stems)))
 
-  # Evaluate seed loss against PubMed-resolved seeds when available (so non-PubMed records don't block valid PubMed exclusions)
   eval_seeds_df <- if (any(seeds_df$in_pubmed %||% FALSE)) {
     seeds_df[which(seeds_df$in_pubmed), , drop = FALSE]
   } else {
@@ -231,7 +413,7 @@ discover_exclusion_hints <- function(base_query,
   min_noise_cnt <- max(3L, ceiling(0.03 * n_noise))
   freq_cands <- names(gram_df[gram_df >= min_noise_cnt])
 
-  # Include parenthesized compound subtype codes like "A(H1N1)pdm09" -> "h1n1pdm09"
+  # Include parenthesized compound alphanumeric codes (e.g. "A(H1N1)pdm09" -> "h1n1pdm09")
   raw_code_2grams <- names(gram_df)[grepl("^[a-z]+[0-9]+[a-z0-9]* [a-z]+[0-9]+[a-z0-9]*$", names(gram_df))]
   raw_code_2grams <- Filter(function(g2) {
     parts <- strsplit(g2, " ", fixed = TRUE)[[1]]
@@ -243,7 +425,6 @@ discover_exclusion_hints <- function(base_query,
     merged_code_2grams
   ))
 
-  # Synthesize prefix wildcards (e.g. vaccin*, cell*, mutat*, phylo*, reassort*, receptor*, duck*, ferret*)
   wildcard_cands <- .synthesize_exclusion_wildcards(
     doc_grams = doc_grams,
     noise_texts = noise_texts,
@@ -257,20 +438,34 @@ discover_exclusion_hints <- function(base_query,
   cands <- unique(c(wildcard_cands, freq_cands, code_tokens))
   cands <- cands[nchar(cands) >= 3L & !grepl("^[0-9\\s]+$", cands)]
 
-  # Drop terms that overlap positive query terms, their code family, or their stems
   cands <- Filter(function(t_str) {
     t_bare <- gsub("\\*", "", t_str)
-    if (t_bare %in% pos_terms) return(FALSE)
-    if (any(vapply(pos_terms, .is_code_family, logical(1), t2 = t_bare))) return(FALSE)
-    if (any(vapply(pos_terms, function(pt) grepl(paste0("(?<![a-z0-9])", escape_regex(pt), "(?![a-z0-9])"), t_bare, perl = TRUE), logical(1)))) return(FALSE)
-    if (length(intersect(term_stems(t_bare), pos_stems)) > 0L) return(FALSE)
+    if (t_bare %in% pos_terms) {
+      return(FALSE)
+    }
+    if (any(vapply(pos_terms, .is_code_family, logical(1), t2 = t_bare))) {
+      return(FALSE)
+    }
+    if (any(vapply(pos_terms, function(pt) grepl(paste0("(?<![a-z0-9])", escape_regex(pt), "(?![a-z0-9])"), t_bare, perl = TRUE), logical(1)))) {
+      return(FALSE)
+    }
+    if (length(intersect(term_stems(t_bare), pos_stems)) > 0L) {
+      return(FALSE)
+    }
+    if (nchar(t_bare) >= 5L && any(vapply(pos_terms[nchar(pos_terms) >= 5L], function(pt) {
+      identical(substr(pt, 1L, 5L), substr(t_bare, 1L, 5L)) || .char_ngram_sim(pt, t_bare, 4L) >= 0.40
+    }, logical(1)))) {
+      return(FALSE)
+    }
     TRUE
   }, cands)
-  if (length(cands) == 0L) return(.empty_exclusion_hints())
+  if (length(cands) == 0L) {
+    return(.empty_exclusion_hints())
+  }
 
   in_gram <- intersect(cands, names(gram_df))
   cands_ord <- in_gram[order(gram_df[in_gram], decreasing = TRUE)]
-  cands <- unique(c(wildcard_cands, utils::head(cands_ord, 240L), intersect(cands, code_tokens)))
+  cands <- unique(c(intersect(wildcard_cands, cands), utils::head(cands_ord, 240L), intersect(cands, code_tokens)))
 
   zero_loss_codes <- Filter(function(ct) {
     sum(term_matches_text(ct, seed_texts)) == 0L
@@ -291,7 +486,6 @@ discover_exclusion_hints <- function(base_query,
     n_loss_tiab <- length(s_loss_tiab_idx)
     n_loss_ti <- length(s_loss_ti_idx)
 
-    # Choose best scope: tiab if 0 seeds lost, else title if 0 seeds lost in title
     use_scope <- NULL
     min_tiab_rate <- if (is_code) 0.025 else 0.035
     if (n_loss_tiab == 0L && n_cov_tiab >= min_tiab_rate) {
@@ -307,15 +501,12 @@ discover_exclusion_hints <- function(base_query,
     if (is.null(use_scope)) next
     est_rem <- as.integer(round(base_pm_hits * use_scope$noise_rate))
     n_lost <- length(use_scope$loss_idx)
-    concept <- assign_exclusion_concept(t_str)
     scope_bonus <- if (use_scope$field == "tiab" && n_lost == 0L) 1.35 else 1.0
     code_bonus <- if (is_code && use_scope$field == "tiab" && n_lost == 0L) 1.50 else 1.0
     wild_bonus <- if (is_wild && n_lost == 0L) 1.35 else 1.0
     unigram_bonus <- if (!grepl(" ", t_str, fixed = TRUE)) 1.15 else 1.0
-    concept_bonus <- if (concept != "general_noise") 1.20 else 0.90
 
     scored[[length(scored) + 1L]] <- list(
-      concept = concept,
       term = t_str,
       is_code = is_code,
       is_wild = is_wild,
@@ -326,13 +517,15 @@ discover_exclusion_hints <- function(base_query,
       est_removed = est_rem,
       seeds_lost_n = n_lost,
       seeds_lost_citekeys = paste(eval_seeds_df$citekey[use_scope$loss_idx], collapse = "; "),
-      rank_score = (est_rem * scope_bonus * code_bonus * wild_bonus * unigram_bonus * concept_bonus) / (1 + 6 * n_lost)
+      rank_score = (est_rem * scope_bonus * code_bonus * wild_bonus * unigram_bonus) / (1 + 6 * n_lost)
     )
   }
 
-  if (length(scored) == 0L) return(.empty_exclusion_hints())
+  if (length(scored) == 0L) {
+    return(.empty_exclusion_hints())
+  }
 
-  # Deduplicate redundant literal words that are already subsumed by a safe wildcard in the same scope
+  # Deduplicate literal words already subsumed by a safe wildcard in the same scope
   scored_ord <- scored[order(vapply(scored, `[[`, numeric(1), "rank_score"), decreasing = TRUE)]
   keep_sc <- rep(TRUE, length(scored_ord))
   for (i in seq_along(scored_ord)) {
@@ -343,20 +536,38 @@ discover_exclusion_hints <- function(base_query,
         if (i == j || !keep_sc[j]) next
         it_j <- scored_ord[[j]]
         if (identical(it_i$field, it_j$field) && it_j$seeds_lost_n >= it_i$seeds_lost_n &&
-            .term_subsumes(it_i$term, it_j$term)) {
+          .term_subsumes(it_i$term, it_j$term)) {
           keep_sc[j] <- FALSE
         }
       }
     }
   }
   scored_ord <- scored_ord[keep_sc]
+  if (length(scored_ord) > 65L) scored_ord <- scored_ord[1:65]
 
-  # Select diverse candidates across all exclusion concepts (up to max_hints, e.g. 35)
+  # Unsupervised noise co-occurrence graph clustering (`cluster_exclusion_terms`)
+  cpt_labels <- cluster_exclusion_terms(
+    terms = vapply(scored_ord, `[[`, character(1), "term"),
+    noise_cov_list = lapply(scored_ord, `[[`, "noise_cov"),
+    rank_scores = vapply(scored_ord, `[[`, numeric(1), "rank_score"),
+    noise_mesh = noise_meta$pm_mesh,
+    noise_keywords = noise_meta$pm_keywords
+  )
+  node_str_vec <- attr(cpt_labels, "node_strength") %||% rep(0.5, length(scored_ord))
+  cpt_labels_plain <- as.character(cpt_labels)
+  for (i in seq_along(scored_ord)) {
+    scored_ord[[i]]$concept <- cpt_labels_plain[i]
+    scored_ord[[i]]$node_strength <- node_str_vec[i]
+  }
+  cpt_labels <- cpt_labels_plain
+
+  # Select diverse candidates across all discovered noise topic clusters (up to max_hints)
   code_idx <- which(vapply(scored_ord, function(x) isTRUE(x$is_code) && x$seeds_lost_n == 0L, logical(1)))
   wild_idx <- which(vapply(scored_ord, function(x) isTRUE(x$is_wild) && x$seeds_lost_n == 0L, logical(1)))
+  all_cpts <- unique(cpt_labels)
   concept_picks <- integer(0)
-  for (cpt in c("competing_subtypes", "experimental_lab", "vaccines_immunology", "veterinary_ecology", "general_noise")) {
-    c_rows <- which(vapply(scored_ord, `[[`, character(1), "concept") == cpt)
+  for (cpt in all_cpts) {
+    c_rows <- which(cpt_labels == cpt)
     if (length(c_rows) > 0L) concept_picks <- c(concept_picks, utils::head(c_rows, 8L))
   }
   all_picks <- sort(unique(c(
@@ -419,13 +630,17 @@ discover_exclusion_hints <- function(base_query,
     dplyr::arrange(.data$seeds_lost_n, dplyr::desc(.data$.is_verified), dplyr::desc(.data$exact_hits_removed)) |>
     dplyr::select(-".is_verified")
 
-  # Re-align noise_cov list with out_df order for greedy set-cover bundling
   spec_map <- stats::setNames(lapply(sel_cands, `[[`, "noise_cov"), vapply(sel_cands, `[[`, character(1), "exclude_spec"))
+  coh_map <- stats::setNames(
+    vapply(sel_cands, function(x) as.numeric(x$node_strength %||% 0.5), numeric(1)),
+    vapply(sel_cands, `[[`, character(1), "exclude_spec")
+  )
   safe_rows <- which(out_df$seeds_lost_n == 0L & out_df$exact_hits_removed > 0L)
 
-  # 1. Build Concept-Grouped Exclusion Blocks (each block is a greedy set-cover of safe exclusions in that concept)
+  # 1. Build Concept-Grouped Exclusion Blocks (greedy set-cover of safe exclusions within each discovered noise topic)
   exclusion_blocks <- list()
-  for (cpt in c("competing_subtypes", "experimental_lab", "vaccines_immunology", "veterinary_ecology", "general_noise")) {
+  out_cpts <- unique(out_df$concept[safe_rows])
+  for (cpt in out_cpts) {
     c_idx <- safe_rows[out_df$concept[safe_rows] == cpt]
     if (length(c_idx) == 0L) next
     cov_cur <- rep(FALSE, n_noise)
@@ -435,7 +650,9 @@ discover_exclusion_hints <- function(base_query,
       if (length(rem) == 0L) break
       gains <- vapply(rem, function(sp) {
         cv <- spec_map[[sp]]
-        if (is.null(cv)) return(0L)
+        if (is.null(cv)) {
+          return(0L)
+        }
         sum(cv & !cov_cur)
       }, integer(1))
       if (max(gains) <= 0L) break
@@ -452,25 +669,35 @@ discover_exclusion_hints <- function(base_query,
       )
     }
   }
+  if (length(exclusion_blocks) > 1L) {
+    eb_ord <- order(vapply(exclusion_blocks, `[[`, integer(1), "noise_covered_n"), decreasing = TRUE)
+    exclusion_blocks <- exclusion_blocks[eb_ord]
+  }
 
-  # 2. Build global greedy set-cover exclusion sequence across safe scientific concept exclusions
+  # 2. Build global greedy set-cover exclusion sequence across all safe exclusion candidates
   global_setcover <- character(0)
   if (length(safe_rows) > 0L) {
-    sci_safe_rows <- safe_rows[out_df$concept[safe_rows] != "general_noise"]
-    use_safe_rows <- if (length(sci_safe_rows) >= 3L) sci_safe_rows else safe_rows
     cov_g <- rep(FALSE, n_noise)
-    avail_sp <- out_df$exclude_spec[use_safe_rows]
-    while (length(global_setcover) < min(14L, length(avail_sp))) {
+    avail_sp <- out_df$exclude_spec[safe_rows]
+    while (length(global_setcover) < min(18L, length(avail_sp))) {
       rem <- setdiff(avail_sp, global_setcover)
       if (length(rem) == 0L) break
       gains <- vapply(rem, function(sp) {
         cv <- spec_map[[sp]]
-        if (is.null(cv)) return(-1)
+        if (is.null(cv)) {
+          return(-1)
+        }
         new_n <- sum(cv & !cov_g)
-        if (new_n == 0L) return(-1)
-        # Penalize long Google Scholar exclusion tokens slightly so set-cover stays compact
-        gs_len <- nchar(out_df$gs_clause[match(sp, out_df$exclude_spec)])
-        new_n / (gs_len ^ 0.35)
+        if (new_n == 0L) {
+          return(-1)
+        }
+        row_i <- match(sp, out_df$exclude_spec)
+        gs_len <- nchar(out_df$gs_clause[row_i])
+        t_sp <- out_df$term[row_i]
+        rem_hits <- pmax(as.numeric(out_df$exact_hits_removed[row_i]), 1)
+        coh_mult <- 0.45 + 0.55 * (coh_map[[sp]] %||% 0.5)
+        type_mult <- if (grepl("^[a-z]+[0-9]+[a-z0-9]*$", t_sp)) 1.25 else if (endsWith(t_sp, "*")) 1.15 else 1.0
+        ((new_n^0.75) * (rem_hits^0.30) * coh_mult * type_mult) / (gs_len^0.35)
       }, numeric(1))
       if (max(gains) <= 0) break
       best_sp <- rem[which.max(gains)]
@@ -479,7 +706,7 @@ discover_exclusion_hints <- function(base_query,
     }
   }
 
-  # 3. Build sibling subtype/code exclusion bundle (top 2 verified zero-loss tiab codes + any zero-loss prefix extensions)
+  # 3. Build sibling alphanumeric code exclusion bundle (top 2 verified zero-loss tiab codes + prefix extensions)
   verified_safe_codes <- out_df$term[
     out_df$seeds_lost_n == 0L &
       out_df$field == "tiab" &
@@ -488,9 +715,6 @@ discover_exclusion_hints <- function(base_query,
   ]
   if (length(verified_safe_codes) > 0L) {
     top2_codes <- utils::head(verified_safe_codes, 2L)
-    if (all(c("h7n9", "h1n1") %in% top2_codes)) {
-      top2_codes <- c("h7n9", "h1n1")
-    }
     ext_codes <- Filter(function(ct) {
       !(ct %in% top2_codes) && any(vapply(top2_codes, function(base_c) {
         nchar(ct) > nchar(base_c) && startsWith(ct, base_c)

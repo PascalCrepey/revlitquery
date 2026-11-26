@@ -89,48 +89,63 @@ query_signature <- function(q) {
   }
 }
 
+.wildcard_state <- new.env(parent = emptyenv())
+.wildcard_state$dynamic_map <- stats::setNames(character(0), character(0))
+
+# Register a corpus-derived expansion for a synthesized prefix wildcard stem
+.register_wildcard_expansion <- function(stem, full_word) {
+  stem <- tolower(stringr::str_squish(sub("\\*+$", "", as.character(stem %||% ""))))
+  full_word <- tolower(stringr::str_squish(as.character(full_word %||% "")))
+  if (nzchar(stem) && nzchar(full_word)) {
+    .wildcard_state$dynamic_map[[stem]] <- full_word
+  }
+  invisible(NULL)
+}
+
 # Normalize a prefix wildcard stem to a clean word for engines without prefix '*' (Google Scholar)
 .expand_wildcard_stem <- function(term) {
   t_clean <- stringr::str_squish(stringr::str_replace_all(term, '["\',]', " "))
   if (!grepl("\\*$", t_clean)) {
     return(t_clean)
   }
-  stem <- sub("\\*+$", "", t_clean)
-  stem_map <- c(
-    "mortalit" = "mortality",
-    "morbidit" = "morbidity",
-    "epidemiol" = "epidemiology",
-    "epidemio" = "epidemiology",
-    "seroprev" = "seroprevalence",
-    "serolog" = "serological",
-    "serol" = "serological",
-    "pathogen" = "pathogenic",
-    "transmi" = "transmission",
-    "zoonot" = "zoonotic",
-    "virulen" = "virulence",
-    "hospital" = "hospitalization",
-    "severit" = "severity",
-    "sever" = "severe",
-    "surviv" = "survival",
-    "vaccin" = "vaccine",
-    "immun" = "immune",
-    "immuni" = "immunity",
-    "antibod" = "antibody",
-    "mutat" = "mutation",
-    "phylo" = "phylogenetic",
-    "phyloge" = "phylogenetic",
-    "reassort" = "reassortment",
-    "epithel" = "epithelial",
-    "epitheli" = "epithelial",
-    "structur" = "structural",
-    "express" = "expression",
-    "nucle" = "nucleoprotein",
-    "necro" = "necrosis",
-    "interfer" = "interferon",
-    "cytokin" = "cytokine",
-    "bovin" = "bovine"
+  stem <- tolower(sub("\\*+$", "", t_clean))
+  # 1. Corpus-derived surface word registered during wildcard synthesis takes top priority
+  dyn <- .wildcard_state$dynamic_map
+  if (stem %in% names(dyn)) return(unname(dyn[[stem]]))
+
+  # 2. Morphological English stem-completion rules for user-supplied wildcards (e.g. vaccin* -> vaccine)
+  morph_map <- c(
+    "mortalit" = "mortality", "morbidit" = "morbidity", "severit" = "severity",
+    "toxicit" = "toxicity", "epidemiol" = "epidemiology", "epidemio" = "epidemiology",
+    "seroprev" = "seroprevalence", "serolog" = "serological", "serol" = "serological",
+    "pathogen" = "pathogenic", "transmi" = "transmission", "zoonot" = "zoonotic",
+    "virulen" = "virulence", "hospital" = "hospitalization", "sever" = "severe",
+    "surviv" = "survival", "vaccin" = "vaccine", "immun" = "immune",
+    "immuni" = "immunity", "antibod" = "antibody", "mutat" = "mutation",
+    "phylo" = "phylogenetic", "phyloge" = "phylogenetic", "reassort" = "reassortment",
+    "epithel" = "epithelial", "epitheli" = "epithelial", "structur" = "structural",
+    "express" = "expression", "nucle" = "nucleoprotein", "necro" = "necrosis",
+    "interfer" = "interferon", "cytokin" = "cytokine", "bovin" = "bovine",
+    "metasta" = "metastasis", "metastat" = "metastatic", "carcino" = "carcinoma",
+    "chemother" = "chemotherapy", "chemotherap" = "chemotherapy",
+    "radiother" = "radiotherapy", "radiotherap" = "radiotherapy",
+    "immunother" = "immunotherapy", "immunotherap" = "immunotherapy",
+    "therap" = "therapy", "therapeut" = "therapeutic", "diagnos" = "diagnosis",
+    "prognos" = "prognosis", "cardio" = "cardiovascular", "arrhythm" = "arrhythmia",
+    "ischem" = "ischemia", "neurolog" = "neurological", "psychiatr" = "psychiatric",
+    "depress" = "depression", "cognit" = "cognitive", "econom" = "economic",
+    "randomi" = "randomized", "randomiz" = "randomized", "randomis" = "randomised",
+    "prevalen" = "prevalence", "inciden" = "incidence", "predict" = "prediction",
+    "rehabilit" = "rehabilitation", "complicat" = "complications",
+    "readmiss" = "readmission", "recurren" = "recurrence", "participa" = "participants",
+    "interven" = "intervention", "pharmacokinet" = "pharmacokinetics", "apoptos" = "apoptosis"
   )
-  if (stem %in% names(stem_map)) unname(stem_map[[stem]]) else stem
+  if (stem %in% names(morph_map)) return(unname(morph_map[[stem]]))
+  if (grepl("alit$", stem)) return(paste0(stem, "y"))
+  if (grepl("olog$", stem)) return(paste0(stem, "y"))
+  if (grepl("therap$", stem)) return(paste0(stem, "y"))
+  if (grepl("ectom$", stem)) return(paste0(stem, "y"))
+  stem
 }
 
 # Format a term for Google Scholar (quote only if multi-word or contains non-alphanumeric chars)

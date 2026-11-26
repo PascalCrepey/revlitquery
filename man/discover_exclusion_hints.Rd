@@ -2,7 +2,7 @@
 % Please edit documentation in R/09_exclusion_hints.R
 \name{discover_exclusion_hints}
 \alias{discover_exclusion_hints}
-\title{Discover concept-grouped candidate exclusion (NOT / -) terms from non-seed PubMed results}
+\title{Discover unsupervised, concept-clustered exclusion (`NOT` / `-`) terms from non-seed PubMed results}
 \usage{
 discover_exclusion_hints(
   base_query,
@@ -54,6 +54,7 @@ Tibble of ranked exclusion hints with `concept` column and `exclusion_blocks` at
 Samples articles returned by `base_query` that are NOT in `seeds_df` across the full
 publication timeline, mines frequent 1- and 2-grams plus morphological prefix wildcards
 (`*`), checks seed loss locally against PubMed-resolved seeds (including PubMed Author
-Keywords), groups exclusions by concept, builds greedy set-cover exclusion blocks,
-and returns up to `max_hints` ranked exclusion hints.
+Keywords), partitions candidates into unsupervised noise topic clusters via
+[cluster_exclusion_terms()], builds greedy set-cover exclusion blocks, and returns up
+to `max_hints` ranked exclusion hints.
 }

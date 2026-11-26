@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_term_extraction.R
 \name{.is_code_family}
 \alias{.is_code_family}
-\title{Check whether two terms share an alphanumeric subtype/code prefix (e.g. h5n1 and h5)}
+\title{Check whether two terms share an alphanumeric code prefix (e.g. brca1/brca, h5n1/h5)}
 \usage{
 .is_code_family(t1, t2)
 }
@@ -15,6 +15,6 @@
 Logical scalar.
 }
 \description{
-Check whether two terms share an alphanumeric subtype/code prefix (e.g. h5n1 and h5)
+Check whether two terms share an alphanumeric code prefix (e.g. brca1/brca, h5n1/h5)
 }
 \keyword{internal}

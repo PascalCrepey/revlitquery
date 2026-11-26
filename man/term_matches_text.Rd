@@ -7,7 +7,7 @@
 term_matches_text(term, texts)
 }
 \arguments{
-\item{term}{Single candidate term.}
+\item{term}{Single candidate term (supports trailing `*` prefix wildcard).}
 
 \item{texts}{Character vector of texts.}
 }

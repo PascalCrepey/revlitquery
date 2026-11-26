@@ -58,12 +58,11 @@ reference:
       - title_sig_words
 
   - title: "Candidate Term Extraction & Concept Blocks"
-    desc: "Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies, and group terms into PICO concept blocks."
+    desc: "Extract n-grams, synthesize prefix wildcards, probe PubMed frequencies, and discover unsupervised concept blocks."
     contents:
       - extract_candidate_terms
+      - discover_term_clusters
       - build_concept_blocks
-      - assign_term_family
-      - assign_term_families
       - term_matches_text
       - term_stems
       - shares_stem
@@ -85,11 +84,11 @@ reference:
       - google_scholar_url
 
   - title: "Pareto Frontier Optimization & Exclusion Mining"
-    desc: "Two-stage Pareto frontier search, timeline-stratified exclusion concept discovery, and custom query benchmarking."
+    desc: "Two-stage Pareto frontier search, unsupervised noise topic exclusion discovery, and custom query benchmarking."
     contents:
       - optimize_queries
       - discover_exclusion_hints
-      - assign_exclusion_concept
+      - cluster_exclusion_terms
       - compute_pareto_frontier
       - generate_initial_candidates
       - estimate_local_query

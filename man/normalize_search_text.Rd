@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_term_extraction.R
 \name{normalize_search_text}
 \alias{normalize_search_text}
-\title{Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)}
+\title{Normalize text for n-gram extraction (preserves alphanumeric tokens)}
 \usage{
 normalize_search_text(x)
 }
@@ -13,5 +13,5 @@ normalize_search_text(x)
 Normalized lowercase alphanumeric text vector.
 }
 \description{
-Normalize text for n-gram extraction (preserves alphanumeric tokens like h5n1)
+Normalize text for n-gram extraction (preserves alphanumeric tokens)
 }

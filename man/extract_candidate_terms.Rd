@@ -7,7 +7,7 @@
 extract_candidate_terms(
   seeds_df,
   config = list(),
-  max_candidates = 45L,
+  max_candidates = 50L,
   probe_pubmed = TRUE,
   eval_bg_fn = NULL,
   email = NULL,

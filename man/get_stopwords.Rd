@@ -2,7 +2,7 @@
 % Please edit documentation in R/04_term_extraction.R
 \name{get_stopwords}
 \alias{get_stopwords}
-\title{Stopword list (standard English + academic/methods filler)}
+\title{Stopword list (standard English + generic academic reporting boilerplate)}
 \usage{
 get_stopwords()
 }
@@ -10,5 +10,5 @@ get_stopwords()
 Character vector of stopwords.
 }
 \description{
-Stopword list (standard English + academic/methods filler)
+Stopword list (standard English + generic academic reporting boilerplate)
 }
