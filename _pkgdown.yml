@@ -20,10 +20,12 @@ navbar:
   components:
     intro:
       text: "Get Started"
-      href: articles/shiny-interface.html
+      href: articles/workflow-explained.html
     articles:
       text: "Vignettes"
       menu:
+        - text: "How revlitquery Works: The Workflow Step by Step"
+          href: articles/workflow-explained.html
         - text: "Interactive Shiny Interface Guide"
           href: articles/shiny-interface.html
         - text: "Command-Line (CLI) and Programmatic R Workflow"

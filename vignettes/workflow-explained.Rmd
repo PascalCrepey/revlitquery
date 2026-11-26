@@ -1,0 +1,324 @@
+---
+title: "How revlitquery Works: The Workflow Step by Step"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How revlitquery Works: The Workflow Step by Step}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7.2,
+  fig.height = 4.6,
+  dpi = 110
+)
+library(revlitquery)
+library(ggplot2)
+options(revlitquery.min_interval = 0)
+```
+
+## Overview
+
+`revlitquery` performs a **reverse literature search**: you give it a handful of
+papers you already know are relevant (the *seed corpus*), and it reverse-engineers
+a boolean query for **PubMed** and **Google Scholar** (at most 256 characters)
+that finds those papers and as few irrelevant ones as possible.
+
+Nothing about the topic is hardcoded. Concepts, synonyms, wildcards and
+exclusions are all discovered from the text of the seed papers and of the
+non-seed papers a draft query returns.
+
+The figure below summarises the eight steps. The rest of this vignette explains
+each one and runs a small, fully offline example on a synthetic corpus (no
+network access needed).
+
+```{r diagram, echo = FALSE, fig.width = 7.4, fig.height = 5.4, fig.alt = "Flow diagram of the eight steps of the revlitquery workflow, from BibTeX seed parsing to the Pareto frontier of PubMed and Google Scholar queries."}
+steps <- data.frame(
+  id    = 1:8,
+  title = c("Parse seeds", "Enrich with PubMed", "Extract terms",
+            "Discover concepts", "Build candidates",
+            "Mine exclusions", "Refine neighbours", "Pareto frontier"),
+  fn    = c("parse_bibtex()", "enrich_seeds()", "extract_candidate_terms()",
+            "build_concept_blocks()", "generate_initial_candidates()",
+            "discover_exclusion_hints()", "optimize_queries()",
+            "write_optimization_report()"),
+  what  = c("BibTeX file\n-> seed table", "PMIDs, abstracts,\nMeSH, keywords",
+            "n-grams, wildcards,\nPubMed lift", "graph clusters ->\nAND / OR blocks",
+            "block tiers x fields\n(<= 256 chars)", "noise topics ->\nNOT terms",
+            "add / drop / swap\nterms and fields", "recall vs. hits,\nPubMed + Scholar"),
+  stage = c("Input", "Input", "Discovery", "Discovery",
+            "Optimization", "Optimization", "Optimization", "Output"),
+  stringsAsFactors = FALSE
+)
+# Snake layout: steps 1-4 left-to-right on the top row, 5-8 right-to-left below
+sp <- 1.35
+steps$x <- sp * c(1, 2, 3, 4, 4, 3, 2, 1)
+steps$y <- c(2, 2, 2, 2, 1, 1, 1, 1)
+bw <- 0.60; bh <- 0.36
+
+arrows <- data.frame(
+  x    = c(1 * sp + bw, 2 * sp + bw, 3 * sp + bw, 4 * sp, 4 * sp - bw, 3 * sp - bw, 2 * sp - bw),
+  y    = c(2, 2, 2, 2 - bh, 1, 1, 1),
+  xend = c(2 * sp - bw, 3 * sp - bw, 4 * sp - bw, 4 * sp, 3 * sp + bw, 2 * sp + bw, 1 * sp + bw),
+  yend = c(2, 2, 2, 1 + bh, 1, 1, 1)
+)
+
+steps$stage <- factor(steps$stage, levels = c("Input", "Discovery", "Optimization", "Output"))
+stage_cols <- c(Input = "#8da0cb", Discovery = "#66c2a5",
+                Optimization = "#fc8d62", Output = "#e78ac3")
+
+ggplot() +
+  geom_segment(
+    data = arrows, aes(x = x, y = y, xend = xend, yend = yend),
+    arrow = arrow(length = unit(0.16, "cm"), type = "closed"),
+    linewidth = 0.7, colour = "grey35"
+  ) +
+  geom_rect(
+    data = steps,
+    aes(xmin = x - bw, xmax = x + bw, ymin = y - bh, ymax = y + bh, fill = stage),
+    colour = "grey25", linewidth = 0.4
+  ) +
+  geom_text(data = steps, aes(x = x - bw + 0.05, y = y + bh - 0.07,
+                              label = id), hjust = 0, vjust = 1,
+            fontface = "bold", size = 4.2) +
+  geom_text(data = steps, aes(x = x, y = y + 0.09, label = title),
+            fontface = "bold", size = 3.3) +
+  geom_text(data = steps, aes(x = x, y = y - 0.06, label = fn),
+            family = "mono", size = 2.1, colour = "grey15") +
+  geom_text(data = steps, aes(x = x, y = y - 0.19, label = what),
+            size = 2.5, lineheight = 0.9, colour = "grey20") +
+  scale_fill_manual(values = stage_cols, name = NULL) +
+  scale_x_continuous(limits = c(0.65, 6.1)) +
+  scale_y_continuous(limits = c(0.55, 2.5)) +
+  labs(
+    title = "revlitquery workflow",
+    subtitle = "Seed papers in, Pareto-optimal PubMed and Google Scholar queries out"
+  ) +
+  coord_equal() +
+  theme_void(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5, colour = "grey30"),
+    plot.margin = margin(6, 6, 6, 6)
+  )
+```
+
+The whole pipeline is wrapped by `optimize_search_queries()`; every step is also
+exported so you can run, inspect, or replace it individually.
+
+## A synthetic seed corpus
+
+To keep the example offline, we build the seed table by hand. In real use,
+steps 1 and 2 produce exactly this structure from your BibTeX file.
+
+```{r seeds}
+titles <- c(
+  "Pollinator decline in fragmented agricultural landscapes",
+  "Wild bee pollinator richness decline across fragmented farmland",
+  "Bumblebee abundance loss in fragmented agricultural habitats",
+  "Pollinator diversity loss in fragmented agroecosystem landscapes",
+  "Solitary bee decline across fragmented cropland habitats",
+  "Pollinator richness loss in fragmented agricultural ecosystems",
+  "Pesticide exposure drives pollinator decline in farmland",
+  "Hoverfly pollinator abundance decline in fragmented meadows"
+)
+seeds <- tibble::tibble(
+  seed_id = seq_along(titles),
+  citekey = paste0("seed", seq_along(titles)),
+  year = as.character(2016 + seq_along(titles)),
+  doi = "",
+  pmid = as.character(1000 + seq_along(titles)),
+  in_pubmed = TRUE,
+  full_title = titles,
+  full_abstract = titles,
+  full_text = titles,
+  mesh_terms = rep(list(character(0)), length(titles)),
+  all_keywords = rep(list(character(0)), length(titles))
+)
+seeds[, c("citekey", "full_title")]
+```
+
+## Step 1: Parse the seed BibTeX file
+
+`parse_bibtex()` reads a `.bib` file, cleans LaTeX markup, and extracts titles,
+abstracts, DOIs, PMIDs and keywords. It tolerates concatenated strings,
+nested braces and malformed entries.
+
+```r
+seeds_raw <- parse_bibtex("path/to/seed_articles.bib")
+```
+
+## Step 2: Enrich seeds with PubMed
+
+`enrich_seeds()` resolves each reference to a PubMed record by PMID, then DOI,
+then fuzzy title match (`title_jaccard()`). It adds PubMed abstracts, MeSH
+headings and author keywords, and flags seeds that are not in PubMed
+(`in_pubmed = FALSE`). Calls follow the NCBI usage policy (identified tool name,
+HTTP POST, rate limiting) and are cached on disk.
+
+```r
+seeds <- enrich_seeds(seeds_raw, cache_dir = ".cache")
+```
+
+## Step 3: Extract and score candidate terms
+
+`extract_candidate_terms()` mines 1- to 3-grams from titles and abstracts and
+**synthesizes prefix wildcards** (for example `decreas*`, `pollinat*`) when
+several corpus words share a stem that rescues extra seeds. A multi-layer
+set-cover shortlist keeps terms from several independent facets of the corpus,
+plus rare terms that rescue outlier papers. Each shortlisted term is probed in
+PubMed for its background frequency, giving a **lift** (how over-represented the
+term is in your seeds compared to PubMed overall).
+
+Here a function replaces the live PubMed probe:
+
+```{r terms}
+fake_bg <- function(term) {
+  switch(term,
+    "pollinator" = 9000L, "decline" = 120000L, "fragmented" = 15000L,
+    40000L
+  )
+}
+terms <- extract_candidate_terms(seeds, probe_pubmed = TRUE, eval_bg_fn = fake_bg)
+head(terms[, c("term", "df_tiab", "bg_hits", "lift")], 8)
+```
+
+## Step 4: Discover concept blocks
+
+Instead of a predefined concept list, `build_concept_blocks()` discovers the
+structure of the topic from the data:
+
+1. The best high-lift anchor becomes the **primary topic** block.
+2. `discover_term_clusters()` builds a graph of candidate terms. Edges combine
+   local-context and MeSH/keyword similarity (a small latent semantic analysis),
+   coverage complementarity (two terms that cover different seeds are likely
+   interchangeable `OR` synonyms), and lexical similarity. Louvain community
+   detection then groups terms into concepts.
+3. Within each community a greedy set-cover grows an `OR` block; blocks are
+   combined with `AND`.
+
+```{r blocks}
+blocks <- build_concept_blocks(
+  terms, seeds,
+  max_blocks = 3L,
+  probe_selectivity = TRUE,
+  eval_joint_fn = function(t1, t2) 2500L   # stand-in for a PubMed joint count
+)
+for (b in blocks) cat(sprintf("%-22s %s\n", b$name, paste(b$terms, collapse = " | ")))
+```
+
+You can always override discovery with `custom_blocks` in the configuration.
+
+## Step 5: Build and translate candidate queries
+
+`generate_initial_candidates()` combines block specificity tiers and fields
+(title vs. title/abstract) into diverse candidates, discarding any that exceed
+256 characters once translated. A query is a canonical object that
+`to_pubmed_query()` and `to_google_scholar_query()` translate into each syntax
+(Google Scholar has no truncation operator, so wildcards are expanded to the
+dominant corpus word or a morphological stem).
+
+```{r queries}
+q <- make_query(list(
+  list(name = "topic",   field = "tiab", terms = c("pollinat*", "bee")),
+  list(name = "trend",   field = "tiab", terms = c("decline", "loss"))
+), exclude_terms = "pesticide")
+
+cat(to_pubmed_query(q), "\n")
+cat(to_google_scholar_query(q), "\n")
+gs_char_count(q)
+```
+
+Without network access, `estimate_local_query()` scores a query against the seed
+texts, which is what the optimizer uses to pre-rank candidates before spending
+PubMed calls.
+
+```{r local}
+est <- estimate_local_query(q, terms, seeds)
+c(local_recall = est$local_recall, seeds_found = est$local_found)
+```
+
+## Step 6: Mine exclusion hints
+
+`discover_exclusion_hints()` samples non-seed articles returned by the best
+draft query and finds what makes them noise. Candidate `NOT` terms (words,
+phrases, and synthesized wildcards) are checked locally against the seeds so
+none that would drop a seed is recommended blindly. Terms are then partitioned
+into **noise topics** by an NPMI/Jaccard co-occurrence graph with Louvain
+clustering (`cluster_exclusion_terms()`), and a greedy set-cover builds
+compact exclusion bundles that fit in the 256-character budget. Verified hit
+reductions come from live PubMed counts.
+
+```{r noise}
+noise_terms <- c("xenograft", "mice", "vitro", "resection", "laparoscopic", "biopsy")
+noise_cov <- list(
+  c(rep(TRUE, 6), rep(FALSE, 6)), c(rep(TRUE, 5), rep(FALSE, 7)),
+  c(FALSE, rep(TRUE, 5), rep(FALSE, 6)), c(rep(FALSE, 6), rep(TRUE, 6)),
+  c(rep(FALSE, 6), rep(TRUE, 5), FALSE), c(rep(FALSE, 7), rep(TRUE, 5))
+)
+as.character(cluster_exclusion_terms(noise_terms, noise_cov))
+```
+
+## Step 7: Refine neighbours
+
+`optimize_queries()` runs a two-stage search under a fixed evaluation budget
+(`max_evals`). **Stage 1** evaluates the initial candidates live. **Stage 2a**
+adds exclusion-refined variants. **Stage 2b** greedily generates neighbours of
+the current Pareto queries: prune a term, switch a field, swap in a narrower
+variant, add a rescue term from the same concept cluster for seeds still
+missed, add a qualifier block, or extend the exclusions. Each round re-evaluates
+the most promising neighbours and stops once the frontier stops improving.
+
+## Step 8: Read the Pareto frontier
+
+Every evaluated query has a recall (share of seeds found) and a hit count
+(PubMed results). The **Pareto frontier** keeps queries that no other query beats
+on both axes. `write_optimization_report()` exports it with PubMed and Google
+Scholar strings and links; the Shiny app (`run_revlitquery_app()`) shows it
+interactively.
+
+```{r pareto}
+frontier_demo <- data.frame(
+  recall = c(0.62, 0.75, 0.88, 0.94, 1.00, 0.70, 0.90, 0.85),
+  hits   = c(120, 210, 340, 430, 780, 400, 900, 600)
+)
+frontier_demo$is_pareto <- compute_pareto_frontier(
+  data.frame(combined_recall = frontier_demo$recall, pm_hits = frontier_demo$hits,
+             gs_chars = 100L, n_terms = 4L)
+)
+ggplot(frontier_demo, aes(hits, recall)) +
+  geom_step(data = subset(frontier_demo, is_pareto), direction = "hv",
+            colour = "#d95f02") +
+  geom_point(aes(colour = is_pareto), size = 3) +
+  scale_colour_manual(values = c(`TRUE` = "#d95f02", `FALSE` = "grey60"),
+                      labels = c("Dominated", "Pareto-optimal"), name = NULL) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "PubMed hits (lower is more precise)", y = "Seed recall",
+       title = "Illustrative sensitivity-specificity frontier") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+Pick the point on the frontier that matches your review: a high-recall query for
+systematic reviews, or a compact query for quick scoping.
+
+## Putting it together
+
+All eight steps run in one call:
+
+```r
+res <- optimize_search_queries(
+  bib_path   = "path/to/seed_articles.bib",
+  output_dir = "output",
+  min_recall = 0.90,
+  max_hits   = 1000
+)
+res$pareto_df
+```
+
+See `vignette("cli-and-r-workflow")` for command-line options and
+`vignette("shiny-interface")` for the interactive dashboard.
